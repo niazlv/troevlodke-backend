@@ -27,18 +27,15 @@ export class AuthService {
                     login: dto.login,
                     hash,
                     permissions: 3,
-                    role: 32
+                    role: 3
                 },
             });
             delete user.hash;
             return user
         }
         catch(error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                //if field is exist throw error to client
-                if (error.code === 'P2002') {
-                    throw new ForbiddenException('Credentials taken')
-                }
+            if (error.code === 'P2002') {
+                throw new ForbiddenException('Credentials taken')
             }
             this.logger.error("signup: cathing some error with code: "+error.code+" and with message: "+error.message);
             throw error

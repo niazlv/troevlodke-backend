@@ -35,8 +35,8 @@ export class AuthController {
         description: "requested permits: create:account",
         type:AuthDto
     })
-    @UseGuards(JwtGuard,PermissionsGuard)
-    @Permissions("create:account")
+    // @UseGuards(JwtGuard,PermissionsGuard)
+    // @Permissions("create:account")
     @Post('signup')
     async signup(@Body() dto: AuthDto):Promise<ReturnDto> {
         return {

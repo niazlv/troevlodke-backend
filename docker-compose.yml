@@ -72,7 +72,7 @@ services:
   api-stage:
     # stdin_open: true # docker run -i
     # tty: true        # docker run -t
-    image: niazlv/troevlodke-backend
+    image: niazlv/troevlodke-backend:latest
     depends_on:
       - postgres-stage
     restart: always
