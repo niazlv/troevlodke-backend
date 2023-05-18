@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//побитовая модель доступа
+model permissions {
+  bit  Int    @id
+  name String
+}
+
+//модель ролей в системе
+model Role {
+  bit  Int    @id
+  name String
+}
+
+
+model ActiveToken {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  userid      Int
+  token       String @unique //токен
+  description String @default("CbAS") //описание для кого выдан токен или кем CbAS(Created by AutoSystem)
+  permissions BigInt @default(1) //Какие права у токена. Права выше чем у пользователя не работают(если у толькователя права только 3, а тут выставлено 7, то права будут на уровне 3, НО если вдруг у пользователя права повысились до 15, то права его по этому токену будут 7)
+
+  usedAt      DateTime @updatedAt @default(now())
+  countOfUses Int @default(0)
+}
+
+model UserFeed {
+  userid    Int @id 
+  
+  likesid   Int[] @default([])
+  comments  Int[] @default([])
+  posts     Int[] @default([])
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  role        Int      @default(3)
+  permissions BigInt   @default(2)
+  other       Json     @default("{}")
+  isActive    Boolean  @default(true)
+
+  firstname  String? //name
+  lastname   String? //lastname
+  middlename String? //middle name
+  birthday   DateTime? //birthday
+
+  city    String @default("Moscow")
+  country String @default("Russia")
+
+  login String  @unique //login
+  hash  String //pswd
+  email String? //email
+
+  parentid Int[] @default([0]) //parentids
+
+  score     Int     @default(0) //rating score
+  courcesid Int[]   @default([]) // cources id's
+  progress  Json    @default("{}") // ???
+  friendsid Int[]   @default([]) // friends
+  interests String  @default("")
+
+  tests     Int[] @default([])
+
+  rating    Float  @default(5) //rating 0.0-5.0
+  social    Json   @default("{}") //{'vk':"vk.com/durov", ...}
+  photo      String? //url to photografy
+
+  @@map("users")
+}

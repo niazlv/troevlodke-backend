@@ -1,0 +1,4 @@
+bit name
+1   Admin
+2   Parent
+3   User

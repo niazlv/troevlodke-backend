@@ -1,0 +1,11 @@
+yarn add @nestjs/config 
+yarn add @nestjs/swagger
+yarn add class-transformer
+yarn add class-validator  
+yarn add @prisma/client
+yarn add argon2  
+yarn add @nestjs/jwt
+yarn add prisma
+yarn add --save @nestjs/passport passport passport-local
+yarn add --dev @types/passport-local
+

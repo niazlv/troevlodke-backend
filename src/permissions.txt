@@ -1,0 +1,3 @@
+bit     name
+1       read:yourself
+2       write:yourself

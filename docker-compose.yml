@@ -1,0 +1,72 @@
+version: '2.2'
+services:
+  postgres-pipeline-test:
+    image: postgres:13
+    restart: always
+    env_file:
+      - ./env/pipeline-test.env
+    networks:
+      - test
+
+  postgres-test:
+    image: postgres:13
+    restart: always
+    ports:
+      - 5434:5432
+    env_file:
+      - ./env/test.env
+    networks:
+      - test
+      
+  postgres-dev:
+    image: postgres:13
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - ./env/dev.env
+    networks:
+      - dev
+
+  postgres-stage:
+    image: postgres:13
+    restart: always
+    ports:
+      - 5433:5432
+    env_file:
+      - ./env/stage.env
+    networks:
+      - stage
+    volumes:
+      - ~/api-stage/data:/var/lib/postgresql/data
+
+  api-test:
+    build: 
+      context: .
+      dockerfile: ./docker/test.Dockerfile
+    depends_on:
+      - postgres-test
+    networks:
+      - test
+  api-stage:
+    # stdin_open: true # docker run -i
+    # tty: true        # docker run -t
+    build:
+      context: .
+      dockerfile: ./docker/stage.Dockerfile
+    depends_on:
+      - postgres-stage 
+    restart: always
+    ports:
+      - 127.0.0.1:3000:3000
+      - 127.0.0.1:3001:3001
+    networks:
+      - stage 
+
+    volumes:
+      - ~/api-stage/uploads:/app/uploads
+
+networks:
+  test:
+  dev:
+  stage:
