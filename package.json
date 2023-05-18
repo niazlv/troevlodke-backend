@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "nest build",
-    "stage:compile:docker": "docker build . -f ./docker/stage.Dockerfile -t troevlodke-backend",
+    "stage:compile:docker": "docker build . -f ./docker/stage.Dockerfile -t niazlv/troevlodke-backend",
     "init": "npm install && npm install --global yarn && npm i --global dotenv-cli",
     "db:test:up": "docker compose up -d postgres-test",
     "db:test:rm": "docker compose rm -f -s -v postgres-test",

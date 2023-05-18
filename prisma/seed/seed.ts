@@ -25,7 +25,7 @@ async function main() {
 
 
     /** Create roles */
-    const roles = getDataFromFile("./src/role.txt");
+    const roles = getDataFromFile(fs.existsSync("./role.txt")?"./role.txt":"./src/role.txt");
     count = 0;
     var data_roles = await prisma.role.findMany({});
     for(var i = 0; i < data_roles.length; i++) {
@@ -49,7 +49,7 @@ async function main() {
     }
     
     /** Create permissions */
-    const permissions = getDataFromFile("./src/permissions.txt");
+    const permissions = getDataFromFile(fs.existsSync("./permissions.txt")? "./permissions.txt":"./src/permissions.txt");
     count = 0;
     var data_permissions = await prisma.permissions.findMany({});
     for(var i = 0; i < data_permissions.length; i++) {
