@@ -55,10 +55,14 @@ $ npm run stage:compile:docker
 # compile multi arch image and push it(delete docker push .. on package.json to just compile)
 $ npm run stage:compile:docker:multi
 
-# start project localy via docker
+# start project localy via docker(with compiled image)
 $ docker compose up -d api-stage
-```
 
+# start project localy via docker(autobuild image)
+$ docker compose up -d api-stage-build
+```
+Just read/write package.json for any scripts  
+Dockerfiles are in the folder ./docker  
 ## Config
 
 You can change ./src/role.txt to add new roles  
