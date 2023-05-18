@@ -38,7 +38,7 @@ services:
     networks:
       - stage
     volumes:
-      - ~/api-stage/data:/var/lib/postgresql/data
+      - docker-stage-troevlodke-postgres:/var/lib/postgresql/data
 
   api-test:
     build: 
@@ -48,7 +48,8 @@ services:
       - postgres-test
     networks:
       - test
-  api-stage:
+  
+  api-stage-build:
     # stdin_open: true # docker run -i
     # tty: true        # docker run -t
     build:
@@ -57,9 +58,29 @@ services:
     depends_on:
       - postgres-stage 
     restart: always
+    env_file:
+      - ./env/stage.env
     ports:
-      - 127.0.0.1:3000:3000
-      - 127.0.0.1:3001:3001
+      - 127.0.0.1:4081:4081
+      - 127.0.0.1:5555:5555
+    networks:
+      - stage 
+
+    volumes:
+      - ~/api-stage/uploads:/app/uploads
+
+  api-stage:
+    # stdin_open: true # docker run -i
+    # tty: true        # docker run -t
+    image: troevlodke-backend
+    depends_on:
+      - postgres-stage 
+    restart: always
+    env_file:
+      - ./env/stage.env
+    ports:
+      - 127.0.0.1:4081:4081
+      - 127.0.0.1:5555:5555
     networks:
       - stage 
 
@@ -70,3 +91,6 @@ networks:
   test:
   dev:
   stage:
+
+volumes:
+  docker-stage-troevlodke-postgres:

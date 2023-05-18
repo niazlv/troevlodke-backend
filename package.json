@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "nest build",
+    "stage:compile:docker": "docker build . -f ./docker/stage.Dockerfile -t troevlodke-backend",
     "init": "npm install && npm install --global yarn && npm i --global dotenv-cli",
     "db:test:up": "docker compose up -d postgres-test",
     "db:test:rm": "docker compose rm -f -s -v postgres-test",
@@ -31,10 +32,12 @@
     "db:stage:rm": "docker compose rm -f -s -v postgres-stage",
     "db:stage:seed": "dotenv -e env/stage.env -- yarn prisma db seed",
     "start:stage": "dotenv -e ./env/stage.env -- node dist/src/main.js",
+    "start:stage:docker": "node dist/src/main.js",
     "start:stage:nest": "dotenv -e ./env/stage.env -- nest start",
     "migrate:stage": "dotenv -e ./env/stage.env -- yarn prisma migrate deploy",
     "studio:stage": "dotenv -e ./env/stage.env -- yarn prisma studio -p 3001",
-    "run:stage": "sleep 10 && yarn migrate:stage && yarn start:stage",
+    "run:stage:docker": "yarn start:stage:docker",
+    "run:stage": "sleep 10 && migrate:stage && yarn start:stage",
     "init:stage": "yarn init && yarn db:stage:up && sleep 30 && yarn migrate:stage && yarn db:stage:seed && yarn start:stage",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
   },
