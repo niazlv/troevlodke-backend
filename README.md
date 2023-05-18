@@ -24,49 +24,47 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Hackaton backend. 20 theme
 
 ## Installation
 
+!!!You're need installed docker!!!
+
 ```bash
-$ npm install
+$ npm run init
 ```
 
 ## Running the app
 
 ```bash
-# development
-$ npm run start
+# first run to development mode
+$ npm run init:dev
 
-# watch mode
+# development & watch mode
 $ npm run start:dev
 
+# first run to production mode
+$ npm run init:stage
+
 # production mode
-$ npm run start:prod
+$ npm run run:stage
+
+# compile docker image and push it(delete docker push .. on package.json to just compile)
+$ npm run stage:compile:docker
+
+# compile multi arch image and push it(delete docker push .. on package.json to just compile)
+$ npm run stage:compile:docker:multi
+
+# start project localy via docker
+$ docker compose up -d api-stage
 ```
 
-## Test
+## Config
 
-```bash
-# unit tests
-$ npm run test
+You can change ./src/role.txt to add new roles  
+Or you can add new permissions on ./src/permissions.txt  
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+any other configs on env
 
 ## License
 

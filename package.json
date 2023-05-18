@@ -10,8 +10,8 @@
   },
   "scripts": {
     "build": "nest build",
-    "stage:compile:docker:amd64": "docker buildx build --platform linux/amd64 . -f ./docker/stage.Dockerfile --push -t niazlv/troevlodke-backend",
-    "stage:compile:docker:multi": "docker buildx build --platform linux/amd64,linux/arm64 . -f ./docker/stage.Dockerfile --push -t niazlv/troevlodke-backend",
+    "stage:compile:docker:amd64": "docker buildx build --platform linux/amd64 . -f ./docker/stage.Dockerfile -t niazlv/troevlodke-backend && docker push niazlv/troevlodke-backend",
+    "stage:compile:docker:multi": "docker buildx build --platform linux/amd64,linux/arm64 . -f ./docker/stage.Dockerfile -t niazlv/troevlodke-backend && docker push niazlv/troevlodke-backend",
     "stage:compile:docker": "docker build . -f ./docker/stage.Dockerfile -t niazlv/troevlodke-backend",
     "init": "npm install && npm install --global yarn && npm i --global dotenv-cli",
     "db:test:up": "docker compose up -d postgres-test",
