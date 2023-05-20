@@ -22,6 +22,8 @@ model Role {
   name String
 }
 
+
+// Модель для сохранения файлов
 model Files {
   id  Int @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -36,6 +38,7 @@ model Files {
   checksum String @unique
 }
 
+// модель школ
 model School {
   id Int @id @default(autoincrement())
   name String
@@ -44,6 +47,7 @@ model School {
   years String[]
 }
 
+// модель excel parsed from file
 model excelFieldsOfStudy {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -55,6 +59,17 @@ model excelFieldsOfStudy {
   
   schoolid Int[] @default([])
   originalFileChecksum String @unique
+}
+
+model Quizzes {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  type Int @default(0)
+  
+  data String
+  description String?
+  title String?
 }
 
 model ActiveToken {
