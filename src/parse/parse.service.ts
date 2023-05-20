@@ -1,10 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Files } from '@prisma/client';
 import { length } from 'class-validator';
 import { createHash } from 'crypto';
 import { Workbook } from 'exceljs';
 import { forkJoin } from 'rxjs';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetSchoolDto } from './dto';
 @Injectable()
 export class ParseService {
     
@@ -283,6 +284,24 @@ export class ParseService {
         return {
             upload_file: uploadedFile,
             parsed_file: excelFieldsOfStudy
+        }
+    }
+
+
+    async getSchool(data:GetSchoolDto) {
+        const dd= {
+            id:data.id,
+            name:data.name
+        };
+        if(dd.id == null) delete dd.id;
+        if(dd.name == null) delete dd.name;
+        try {
+            const School = await this.prisma.school.findFirstOrThrow({
+                where: data
+            });
+            return School
+        } catch(e) {
+            throw new NotFoundException()
         }
     }
 }
