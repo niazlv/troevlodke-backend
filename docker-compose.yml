@@ -22,7 +22,7 @@ services:
     image: postgres:13
     restart: always
     ports:
-      - 5432:5432
+      - 5433:5432
     env_file:
       - ./env/dev.env
     networks:
@@ -32,7 +32,7 @@ services:
     image: postgres:13
     restart: always
     ports:
-      - 5433:5432
+      - 5432:5432
     env_file:
       - ./env/stage.env
     networks:

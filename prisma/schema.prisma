@@ -22,6 +22,40 @@ model Role {
   name String
 }
 
+model Files {
+  id  Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  
+  filename  String
+  mimetype  String?
+  encoding  String
+
+  data Bytes
+  size Int
+  
+  checksum String @unique
+}
+
+model School {
+  id Int @id @default(autoincrement())
+  name String
+  chunks Json
+  
+  years String[]
+}
+
+model excelFieldsOfStudy {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  fileid Int
+
+  ticketStatus Boolean @default(false)
+  nameChunks String[] @default([])
+  nameYear String @default("")
+  
+  schoolid Int[] @default([])
+  originalFileChecksum String @unique
+}
 
 model ActiveToken {
   id        Int      @id @default(autoincrement())

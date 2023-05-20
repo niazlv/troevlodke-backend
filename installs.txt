@@ -10,4 +10,5 @@ yarn add @nestjs/jwt
 yarn add prisma
 yarn add --save @nestjs/passport passport passport-local
 yarn add --dev @types/passport-local
-
+yarn add -D @types/multer
+yarn add exceljs
