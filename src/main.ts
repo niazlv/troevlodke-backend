@@ -76,7 +76,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('troevlodke')
     .setDescription('The troevlodke API description')
-    .setVersion('0.0.1')
+    .setVersion("0.2.1")
     .addBearerAuth()
     //.addServer("campfire.ext-it.ru:4081", "Stage on server")
     //.addServer("campfire.ext-it.ru:4082", "Dev on server")

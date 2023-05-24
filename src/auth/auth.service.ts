@@ -1,12 +1,14 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { ActiveTokenDto, AuthDto } from "./dto";
+import { ActiveTokenDto, AuthDto, SignInDto } from "./dto";
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { createHash, randomBytes } from "crypto";
 import { ActiveToken } from "@prisma/client";
+import { UtilService } from "src/util/util.service";
+import { IsJSON, isJSON } from "class-validator";
 
 @Injectable({})
 export class AuthService {
@@ -14,23 +16,53 @@ export class AuthService {
     constructor(
         private prisma: PrismaService, 
         private jwt: JwtService,
-        private config: ConfigService
+        private config: ConfigService,
+        private utilService: UtilService,
         ) {}
 
     async signup(dto: AuthDto) {
+        // check all fields from DTO
+        
+        const dto_data = {
+            birthday: dto.birthday,
+            categories: dto.categories,
+            city: dto.city,
+            country: dto.country,
+            firstname: dto.firstname,
+            lastname: dto.lastname,
+            middlename: dto.middlename,
+            role: dto.role,
+            login: dto.login,
+            age: dto.age
+        }
+        
+        const data = await this.utilService.cleanData(dto_data);
+
+        if(data['categories'] != null) {
+            if(!isJSON(JSON.stringify(data.categories))) throw new BadRequestException("categories must be a json string");
+        }
         //generate a hash from password
         const hash = await argon.hash(dto.password);
+
+        data['hash'] = hash
+
+        if(data['role'] == null) data['role'] = 4;
+        if(data['permissions'] == null) data['permissions'] = 3;
+
         //try create a field on database
         try {
             const user = await this.prisma.user.create({
-                data: {
-                    login: dto.login,
-                    hash,
-                    permissions: 3,
-                    role: 3
-                },
+                data: data
             });
             delete user.hash;
+
+
+            var tokenName = "auth.service: signToken";
+            var tokenPermissions:bigint = 4294967295n;
+            if(dto.tokenName) tokenName = dto.tokenName;
+            if(dto.tokenPermissions != null) tokenPermissions = dto.tokenPermissions;
+
+            user['access_token'] = await this.signToken(user.id,tokenName,tokenPermissions,tokenName == "auth.service: signToken");
             return user
         }
         catch(error) {
@@ -42,7 +74,7 @@ export class AuthService {
         }
     }
 
-    async signin(dto: AuthDto) {
+    async signin(dto: SignInDto) {
         const user = await this.prisma.user.findUnique({
             where: {
                 login: dto.login,
@@ -57,10 +89,12 @@ export class AuthService {
         if(dto.tokenName) tokenName = dto.tokenName;
         if(dto.tokenPermissions != null) tokenPermissions = dto.tokenPermissions;
         if(!dto.tokenName && dto.tokenPermissions) throw new BadRequestException("tokenPermissions can't be settet without tokenName");
-        return this.signToken(user.id,tokenName,tokenPermissions,tokenName == "auth.service: signToken");
+        return {
+            "access_token": await this.signToken(user.id,tokenName,tokenPermissions,tokenName == "auth.service: signToken")
+        }
     }
 
-    async signToken(userId:number, tokenName:string,tokenPermissions:bigint, isOverride:boolean): Promise<{"access_token":string}>{
+    async signToken(userId:number, tokenName:string,tokenPermissions:bigint, isOverride:boolean): Promise<string>{
         const activeTokens = await this.prisma.activeToken.findMany({
             where:{
                 userid:userId
@@ -112,11 +146,9 @@ export class AuthService {
         }
         const secret = this.config.get('JWT_SECRET');
 
-        return {
-            "access_token":await this.jwt.signAsync(payload, {
+        return await this.jwt.signAsync(payload, {
                 secret:secret,
-                }),
-        }
+                });
     }
 
     //создание мастер токена

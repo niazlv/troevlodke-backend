@@ -68,4 +68,38 @@ export class UtilService {
         //this.logger.verbose(num+" "+one);
         return one;
     }
+
+    async cleanData(o) {
+        if (Object.prototype.toString.call(o) == "[object Array]") {
+          for (let key = 0; key < o.length; key++) {
+            this.cleanData(o[key]);
+            if(Object.prototype.toString.call(o[key]) == "[object Object]") {
+              if(Object.keys(o[key]).length === 0){
+                o.splice(key, 1);
+                key--;
+              }
+            }
+      
+          }
+        }
+        else if (Object.prototype.toString.call(o) == "[object Object]") {
+          for (let key in o) {
+            let value = this.cleanData(o[key]);
+            if (value === null) {
+              delete o[key];
+            }
+            if(Object.prototype.toString.call(o[key]) == "[object Object]") {
+              if(Object.keys(o[key]).length === 0){
+                delete o[key];
+              }
+            }
+            if(Object.prototype.toString.call(o[key]) == "[object Array]") {
+              if(o[key].length === 0){
+                delete o[key];
+              }
+            }
+          }
+        }
+        return o;
+      }
 }

@@ -1,6 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsInt, IsJSON, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString } from 'class-validator';
+import { json } from 'express';
+import { stringify } from 'querystring';
+import { isStringObject } from 'util/types';
 
 export class AuthDto {
     @ApiProperty({ 
@@ -40,4 +43,61 @@ export class AuthDto {
     @IsInt()
     @IsOptional()
     tokenPermissions?: bigint;
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    lastname?: string;
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    firstname?: string;
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    middlename?: string;
+
+    @ApiPropertyOptional()
+    @IsDateString()
+    @IsOptional()
+    birthday?: Date;
+
+    @ApiPropertyOptional()
+    @Type(() =>  Number)
+    @IsInt()
+    @IsOptional()
+    age?: number;
+
+    @ApiPropertyOptional({
+        default: 4,
+        description: "1 - admin, 2 - parent, 4 - user"
+    })
+    @Type(() =>  Number)
+    @IsInt()
+    @IsOptional()
+    role?: number;
+
+    @ApiPropertyOptional({
+        default: "Moscow"
+    })
+    @IsString()
+    @IsOptional()
+    city?: string;
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    country?: string;
+
+    @ApiPropertyOptional({
+        example: {
+            data: [0,1,2,4,6,7]
+        },
+        description: "Направления из шага 3(5 скрин в фигме)"
+    })
+    @IsObject()
+    @IsOptional()
+    categories?: JSON;
 }

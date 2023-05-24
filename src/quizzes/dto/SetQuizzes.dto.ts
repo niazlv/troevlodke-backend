@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsInt, IsJSON, IsOptional, IsString, isJSON } from "class-validator";
+import { IsInt, IsJSON, IsObject, IsOptional, IsString, isJSON } from "class-validator";
 
 export class SetQuizzesDto {
 
@@ -21,21 +21,21 @@ export class SetQuizzesDto {
           }]
           }
     })
-    @IsString()
+    @IsObject()
     data: JSON;
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @Type(() =>  Number)
     @IsInt()
     @IsOptional()
     type?: number;
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsString()
     @IsOptional()
     description?: string;
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsString()
     @IsOptional()
     title?: string;

@@ -67,7 +67,7 @@ model Quizzes {
 
   type Int @default(0)
   
-  data String
+  data Json
   description String?
   title String?
 }
@@ -106,6 +106,7 @@ model User {
   lastname   String? //lastname
   middlename String? //middle name
   birthday   DateTime? //birthday
+  age        Int?
 
   city    String @default("Moscow")
   country String @default("Russia")
@@ -127,6 +128,8 @@ model User {
   rating    Float  @default(5) //rating 0.0-5.0
   social    Json   @default("{}") //{'vk':"vk.com/durov", ...}
   photo      String? //url to photografy
+
+  categories Json? @default("{}")
 
   @@map("users")
 }

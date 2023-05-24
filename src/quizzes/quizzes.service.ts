@@ -1,27 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { SetQuizzesDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { GetQuizzesDto } from './dto/GetQuizzes.dto';
+import { UtilService } from 'src/util/util.service';
+import { isJSON } from 'class-validator';
 
 @Injectable()
 export class QuizzesService {
 
     constructor(
         private prisma: PrismaService,
+        private utilService: UtilService
         ){}
 
 
     async setQuizzes(body: SetQuizzesDto) {
-        const data = {
-            data: JSON.stringify(body.data),
+        const dto_data = {
+            data: body.data,
             description: body.description,
             title: body.title,
             type: body.type
         }
-        if(data.type == null) delete data.type;
-        if(data.description == null) delete data.description;
-        if(data.title == null) delete data.title;
+
+        const data = await this.utilService.cleanData(dto_data);
+
+        if(data['data'] != null) {
+            if(!isJSON(JSON.stringify(data.data))) throw new BadRequestException("data must be a json string");
+        }
+        
         const Quizzes = await this.prisma.quizzes.create({
             data: data
         })

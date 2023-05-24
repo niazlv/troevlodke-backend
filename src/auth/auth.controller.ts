@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiHeader, ApiCreatedResponse, ApiTags } from "
 import { ReturnDto } from "src/dto";
 import { AuthService } from "./auth.service";
 import { Permissions } from "./decorator";
-import { AuthDto } from "./dto";
+import { AuthDto, SignInDto } from "./dto";
 import { JwtGuard, PermissionsGuard } from "./guard";
 
 @ApiTags("Auth")
@@ -23,7 +23,7 @@ export class AuthController {
         }
     })
     @Post('signin')
-    async signin(@Query() dto: AuthDto):Promise<ReturnDto> {
+    async signin(@Query() dto: SignInDto):Promise<ReturnDto> {
         return {
             statusCode:201,
             data: await this.authService.signin(dto)

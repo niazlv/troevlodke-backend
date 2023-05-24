@@ -31,7 +31,7 @@ export class QuizzesController {
     @ApiQuery({
         description: "return quizze by id or type"
     })
-    @UseGuards(JwtGuard)
+    // @UseGuards(JwtGuard)
     @Get("quizzes")
     async getQuizzes(@Query() body:GetQuizzesDto):Promise<ReturnDto> {
         if(body.id == null && body.type == null) throw new BadRequestException("must be more than 0 param")
@@ -44,7 +44,7 @@ export class QuizzesController {
     @ApiQuery({
         description:"return registration quizzes(test)"
     })
-    @UseGuards(JwtGuard)
+    // @UseGuards(JwtGuard)
     @Get("register")
     async getRegisterQuizzes():Promise<ReturnDto> {
         return {
@@ -56,7 +56,7 @@ export class QuizzesController {
     @ApiResponse({
         description:"return categories"
     })
-    @UseGuards(JwtGuard)
+    // @UseGuards(JwtGuard)
     @Get("categories")
     getCategories(): ReturnDto {
         const categories = ["Театр",  "Фортепиано", "Гитара", "Ударные инструменты", "ИЗО", "Живопись", "Хоровое пение", "Хореография", "Скрипка", "Дизайн", "Цирковое искусство", "Вокал"]
