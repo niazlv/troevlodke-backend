@@ -1,11 +1,12 @@
-import { BadRequestException, Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { QuizzesService } from './quizzes.service';
 import { ReturnDto } from 'src/dto';
-import { SetQuizzesDto } from './dto';
+import { PassDto, SetQuizzesDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetQuizzesDto } from './dto/GetQuizzes.dto';
 import { JwtGuard } from 'src/auth/guard';
+import { User } from '@prisma/client';
 
 @ApiTags('quizzes')
 @Controller('quizzes')
@@ -15,6 +16,7 @@ export class QuizzesController {
         private quizzesService:QuizzesService,
     ){}
 
+    @ApiBearerAuth()
     @ApiBody({
         description: "create a quizze and safe him on DB",
         type:SetQuizzesDto
@@ -28,7 +30,7 @@ export class QuizzesController {
         }
     }
 
-    @ApiQuery({
+    @ApiResponse({
         description: "return quizze by id or type"
     })
     // @UseGuards(JwtGuard)
@@ -41,15 +43,26 @@ export class QuizzesController {
         }
     }
 
-    @ApiQuery({
+    @ApiBearerAuth()
+    @ApiResponse({
         description:"return registration quizzes(test)"
     })
-    // @UseGuards(JwtGuard)
+    @UseGuards(JwtGuard)
     @Get("register")
-    async getRegisterQuizzes():Promise<ReturnDto> {
+    async getRegisterQuizzes(@Req() user:{user:User}):Promise<ReturnDto> {
         return {
             statusCode: 200,
-            data: await this.quizzesService.getRegisterQuizzes()
+            data: await this.quizzesService.getRegisterQuizzes(user)
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Post("pass")
+    async passQuizzes(@Body() body:PassDto):Promise<ReturnDto> {
+        return {
+            statusCode: 201,
+            data: await this.quizzesService.passQuizzes(body)
         }
     }
 

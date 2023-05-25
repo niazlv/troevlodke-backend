@@ -93,7 +93,13 @@ export class AuthDto {
 
     @ApiPropertyOptional({
         example: {
-            data: [0,1,2,4,6,7]
+            "data": [
+                {
+                    "id":5,
+                    "label":"Живопись",
+                    "value":"Живопись"
+                }
+            ]
         },
         description: "Направления из шага 3(5 скрин в фигме)"
     })

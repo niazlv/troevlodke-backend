@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { SetQuizzesDto } from './dto';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { PassDto, SetQuizzesDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { GetQuizzesDto } from './dto/GetQuizzes.dto';
 import { UtilService } from 'src/util/util.service';
 import { isJSON } from 'class-validator';
@@ -48,13 +48,108 @@ export class QuizzesService {
         return Quizzes;
     }
 
-    async getRegisterQuizzes() {
+    async getRegisterQuizzes(user:{user:User}) {
+
+        // {"data": [
+        //     {
+        //         "id":5,
+        //         "label":"Живопись",
+        //         "value":"Живопись"
+        //     }]
+        // }
+
+        try {
+        const categories: [{
+            id:number,
+            label:string,
+            value:string
+        }] = user.user.categories['data'];
         const Quizzes = await this.prisma.quizzes.findFirst({
             where:{
-                id: (process.env.registerQuizzId != null)? Number.parseInt(process.env.registerQuizzId): 0,
+                //id: (process.env.registerQuizzId != null)? Number.parseInt(process.env.registerQuizzId): 0,
+                title: categories[0].value
             }
         });
-        Quizzes.data = JSON.parse(JSON.stringify(Quizzes.data))
+        if(Quizzes == null) throw new NotFoundException();
+        Quizzes.data = JSON.parse(JSON.stringify(Quizzes.data));
         return Quizzes;
+        } catch(e) {
+            if (e.code === 'P2002') {
+                throw new InternalServerErrorException("Error on access to db");
+            }
+            if(e.code == 404) {
+                throw new NotFoundException(e);
+            }
+            Logger.error("categories not valid!",e);
+            throw new InternalServerErrorException("your categories not valid!","contact the administration");
+        }
+        
+       return null;
+    }
+
+    async passQuizzes(body: PassDto) {
+        try{
+            const getQuizzes = await this.prisma.quizzes.findFirst({
+                where: {
+                    id: body.id
+                }
+            });
+
+            const data = getQuizzes.data as unknown as Array<JSON>;
+            // {
+            //     answers:string[],
+            //     question:string,
+            //     correct_answer:string
+            // }
+
+            // body
+            // [
+            //     {
+            //         id: 0,
+            //         answer: "bla bla bla"
+            //     }
+            // ] 
+            
+            // getQuizzes
+            // {
+            //     "title": "string"
+            //     "data": [
+            //         {
+            //             "question": "bla bla bla?",
+            //             "answers": ["bla","kek", "cheburek"],
+            //             "correct_answer": "bla"
+            //         },
+            //         {...}
+            //     ]
+            // }
+            if(getQuizzes == null) throw new NotFoundException("can't find quizzes to check by id");
+            // if(data.length != body.user_answers.length) throw new BadRequestException("not enough data")
+            
+            var score = 0;
+            var errors = [];
+            const maxScore = data.length;
+            const len = (data.length <= body.user_answers.length)? data.length: body.user_answers.length;
+
+            for(var i = 0; i < len; i++) {
+                if(data[i]['correct_answer'] == body.user_answers[i]['answer']) {
+                    score += 1;
+                }
+                else {
+                    errors.push(i);
+                }
+            }
+            return {
+                score,
+                maxScore,
+                errors
+            }
+            
+        } catch(e) {
+            if(e.code == 404) {
+                throw new NotFoundException(e);
+            }
+            Logger.error(e);
+            throw new BadRequestException(e);
+        }
     }
 }
