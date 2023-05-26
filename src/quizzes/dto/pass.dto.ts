@@ -14,12 +14,12 @@ export class PassDto {
         isArray: true, 
         example: [
             {
-                id: 0,
+                // id: 0,
                 answer: "Графика"
             }
         ] 
     })
     @IsArray()
     //@IsJSON({ each: true, message: "Each item should be JSON" })
-    user_answers: Array<JSON>;
+    answers: Array<JSON>;
 }

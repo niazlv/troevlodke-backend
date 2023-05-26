@@ -128,10 +128,10 @@ export class QuizzesService {
             var score = 0;
             var errors = [];
             const maxScore = data.length;
-            const len = (data.length <= body.user_answers.length)? data.length: body.user_answers.length;
+            const len = (data.length <= body.answers.length)? data.length: body.answers.length;
 
             for(var i = 0; i < len; i++) {
-                if(data[i]['correct_answer'] == body.user_answers[i]['answer']) {
+                if(data[i]['correct_answer'] == body.answers[i]['answer']) {
                     score += 1;
                 }
                 else {

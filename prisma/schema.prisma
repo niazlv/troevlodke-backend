@@ -61,6 +61,46 @@ model excelFieldsOfStudy {
   originalFileChecksum String @unique
 }
 
+model Comments {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  description String
+  title String?
+
+  likes Int @default(0)
+  dislikes Int @default(0)
+}
+
+model Stage {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  description String?
+  title String?
+
+  type Int @default(0)
+
+  fileid Int[] @default([])
+
+  commentsid Int[] @default([])
+  likes Int @default(0)
+  dislikes Int @default(0)
+}
+
+model Cource {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  description String?
+  title String?
+
+  active_icon String
+  inactive_icon String
+
+  stagesid Int[]
+}
+
 model Quizzes {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())

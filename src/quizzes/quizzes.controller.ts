@@ -57,6 +57,19 @@ export class QuizzesController {
     }
 
     @ApiBearerAuth()
+    @ApiResponse({
+        description: "pass your answers to check him",
+        schema: {
+            example: {
+                "statusCode": 201,
+                "data": {
+                  "score": 1,
+                  "maxScore": 6,
+                  "errors": []
+                }
+              }
+        }
+    })
     @UseGuards(JwtGuard)
     @Post("pass")
     async passQuizzes(@Body() body:PassDto):Promise<ReturnDto> {
@@ -67,7 +80,7 @@ export class QuizzesController {
     }
 
     @ApiResponse({
-        description:"return categories"
+        description:"return categories",
     })
     // @UseGuards(JwtGuard)
     @Get("categories")
