@@ -1,1 +1,5 @@
-export * from "./getCourse.dto"
+export * from './getCourse.dto'
+export * from './createCourse.dto'
+export * from './createStage.dto'
+export * from './getStage.dto'
+export * from './uploadFile.dto'

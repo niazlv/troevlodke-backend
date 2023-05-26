@@ -22,96 +22,100 @@ model Role {
   name String
 }
 
-
 // Модель для сохранения файлов
 model Files {
-  id  Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  
-  filename  String
-  mimetype  String?
-  encoding  String
+
+  filename String
+  mimetype String?
+  encoding String
 
   data Bytes
   size Int
-  
+
   checksum String @unique
 }
 
 // модель школ
 model School {
-  id Int @id @default(autoincrement())
-  name String
+  id     Int    @id @default(autoincrement())
+  name   String
   chunks Json
-  
+
   years String[]
 }
 
 // модель excel parsed from file
 model excelFieldsOfStudy {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  fileid Int
+  fileid    Int
 
-  ticketStatus Boolean @default(false)
-  nameChunks String[] @default([])
-  nameYear String @default("")
-  
-  schoolid Int[] @default([])
+  ticketStatus Boolean  @default(false)
+  nameChunks   String[] @default([])
+  nameYear     String   @default("")
+
+  schoolid             Int[]  @default([])
   originalFileChecksum String @unique
 }
 
+// модель комментариев
 model Comments {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
   description String
-  title String?
+  title       String?
 
-  likes Int @default(0)
+  likes    Int @default(0)
   dislikes Int @default(0)
 }
 
+// модель "этапов" курса
 model Stage {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
   description String?
-  title String?
+  title       String?
 
-  type Int @default(0)
+  type String
 
   fileid Int[] @default([])
 
   commentsid Int[] @default([])
-  likes Int @default(0)
-  dislikes Int @default(0)
+  likes      Int   @default(0)
+  dislikes   Int   @default(0)
 }
 
+// модель курсов
 model Cource {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
   description String?
-  title String?
+  title       String?
 
-  active_icon String
-  inactive_icon String
+  active_icon   String @default("")
+  inactive_icon String @default("")
 
   stagesid Int[]
 }
 
+// модель вопросов
 model Quizzes {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
   type Int @default(0)
-  
-  data Json
+
+  data        Json
   description String?
-  title String?
+  title       String?
 }
 
+// модель токенов
 model ActiveToken {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -121,16 +125,16 @@ model ActiveToken {
   description String @default("CbAS") //описание для кого выдан токен или кем CbAS(Created by AutoSystem)
   permissions BigInt @default(1) //Какие права у токена. Права выше чем у пользователя не работают(если у толькователя права только 3, а тут выставлено 7, то права будут на уровне 3, НО если вдруг у пользователя права повысились до 15, то права его по этому токену будут 7)
 
-  usedAt      DateTime @updatedAt @default(now())
-  countOfUses Int @default(0)
+  usedAt      DateTime @default(now()) @updatedAt
+  countOfUses Int      @default(0)
 }
 
 model UserFeed {
-  userid    Int @id 
-  
-  likesid   Int[] @default([])
-  comments  Int[] @default([])
-  posts     Int[] @default([])
+  userid Int @id
+
+  likesid  Int[] @default([])
+  comments Int[] @default([])
+  posts    Int[] @default([])
 }
 
 model User {
@@ -157,17 +161,17 @@ model User {
 
   parentid Int[] @default([0]) //parentids
 
-  score     Int     @default(0) //rating score
-  courcesid Int[]   @default([]) // cources id's
-  progress  Json    @default("{}") // ???
-  friendsid Int[]   @default([]) // friends
-  interests String  @default("")
+  score     Int    @default(0) //rating score
+  courcesid Int[]  @default([]) // cources id's
+  progress  Json   @default("{}") // ???
+  friendsid Int[]  @default([]) // friends
+  interests String @default("")
 
-  tests     Int[] @default([])
+  tests Int[] @default([])
 
-  rating    Float  @default(5) //rating 0.0-5.0
-  social    Json   @default("{}") //{'vk':"vk.com/durov", ...}
-  photo      String? //url to photografy
+  rating Float   @default(5) //rating 0.0-5.0
+  social Json    @default("{}") //{'vk':"vk.com/durov", ...}
+  photo  String? //url to photografy
 
   categories Json? @default("{}")
 
