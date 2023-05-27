@@ -1,8 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger'
-import {
-    IsOptional,
-    IsString,
-} from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsInt, IsOptional, IsString } from 'class-validator'
 
 export class CreateCourseDto {
     @ApiPropertyOptional()
@@ -14,6 +12,25 @@ export class CreateCourseDto {
     @IsString()
     @IsOptional()
     title?: string
+
+    @ApiPropertyOptional({
+        description:
+            'Hardset category setting by id. Specify either categoryid or categorylabel. The other field will be set automatically',
+        example: 2,
+    })
+    @Type(() => Number)
+    @IsInt()
+    @IsOptional()
+    categoryid?: number
+
+    @ApiPropertyOptional({
+        description:
+            'name of category. Specify either categoryid or categorylabel. The other field will be set automatically',
+        example: 'Гитара',
+    })
+    @IsString()
+    @IsOptional()
+    categorylabel?: string
 
     @ApiPropertyOptional()
     @IsString()

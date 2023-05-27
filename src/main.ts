@@ -6,10 +6,7 @@ import {
 } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
-import {
-    SwaggerModule,
-    DocumentBuilder,
-} from '@nestjs/swagger'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import * as dotenv from 'dotenv'
 
 dotenv.config()
@@ -36,17 +33,8 @@ async function bootstrap() {
         TAG_LOG,
     )
     /** ----------------------------------------------------------- */
-    const _LOG_LEVEL_STAGE: LogLevel[] = [
-        'log',
-        'error',
-        'warn',
-    ]
-    const _LOG_LEVEL_DEV: LogLevel[] = [
-        'log',
-        'error',
-        'warn',
-        'debug',
-    ]
+    const _LOG_LEVEL_STAGE: LogLevel[] = ['log', 'error', 'warn']
+    const _LOG_LEVEL_DEV: LogLevel[] = ['log', 'error', 'warn', 'debug']
     const _LOG_LEVEL_TEST: LogLevel[] = [
         'log',
         'error',
@@ -63,25 +51,18 @@ async function bootstrap() {
             ? _LOG_LEVEL_TEST
             : _LOG_LEVEL_TEST
 
-    if (process.env.ENV == 'dev')
-        _LOG_LEVEL = _LOG_LEVEL_TEST
+    if (process.env.ENV == 'dev') _LOG_LEVEL = _LOG_LEVEL_TEST
 
-    const app = await NestFactory.create(
-        AppModule,
-        {
-            logger: _LOG_LEVEL,
-        },
-    )
+    const app = await NestFactory.create(AppModule, {
+        logger: _LOG_LEVEL,
+    })
     app.enableVersioning({
         type: VersioningType.URI,
         defaultVersion: '1',
         prefix: 'api/v',
     })
 
-    Logger.warn(
-        'log level: ' + process.env.ENV,
-        TAG_LOG,
-    )
+    Logger.warn('log level: ' + process.env.ENV, TAG_LOG)
 
     app.useGlobalPipes(
         new ValidationPipe({
@@ -92,33 +73,24 @@ async function bootstrap() {
 
     app.enableCors({
         origin: true,
-        methods:
-            'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         credentials: true,
     })
 
     const config = new DocumentBuilder()
         .setTitle('troevlodke')
-        .setDescription(
-            'The troevlodke API description',
-        )
-        .setVersion('0.3.1')
+        .setDescription('The troevlodke API description')
+        .setVersion('0.3.3D')
         .addBearerAuth()
         //.addServer("campfire.ext-it.ru:4081", "Stage on server")
         //.addServer("campfire.ext-it.ru:4082", "Dev on server")
         //.addServer("localhost:4082", "Dev localy")
         .build()
-    const document = SwaggerModule.createDocument(
-        app,
-        config,
-    )
+    const document = SwaggerModule.createDocument(app, config)
     SwaggerModule.setup('api', app, document)
     Logger.log('swagger is runned', TAG_LOG)
 
     await app.listen(process.env.PORT)
-    Logger.log(
-        'API is upped on ' + process.env.PORT,
-        TAG_LOG,
-    )
+    Logger.log('API is upped on ' + process.env.PORT, TAG_LOG)
 }
 bootstrap()

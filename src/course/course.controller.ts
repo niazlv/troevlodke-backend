@@ -11,12 +11,7 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common'
-import {
-    ApiBearerAuth,
-    ApiQuery,
-    ApiResponse,
-    ApiTags,
-} from '@nestjs/swagger'
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtGuard } from 'src/auth/guard'
 import { ReturnDto } from 'src/dto'
 import { CourseService } from './course.service'
@@ -24,6 +19,7 @@ import {
     CreateCourseDto,
     CreateStageDto,
     GetCourceDto,
+    GetCoursesByCategoryDto,
     GetStageDto,
     UploadFileDto,
 } from './dto'
@@ -34,61 +30,43 @@ import { NotFoundError } from 'rxjs'
 @ApiTags('The Courses')
 @Controller('course')
 export class CourseController {
-    constructor(
-        private courseService: CourseService,
-    ) {}
+    constructor(private courseService: CourseService) {}
 
     //@ApiQuery({})
     //@UseGuards(JwtGuard)
     @Get('course')
-    async getCourse(
-        @Query() dto: GetCourceDto,
-    ): Promise<ReturnDto> {
+    async getCourse(@Query() dto: GetCourceDto): Promise<ReturnDto> {
         return {
             statusCode: 200,
-            data: await this.courseService.getCourse(
-                dto,
-            ),
+            data: await this.courseService.getCourse(dto),
         }
     }
 
     @ApiBearerAuth()
     @UseGuards(JwtGuard)
     @Post('course')
-    async createCourse(
-        @Body() dto: CreateCourseDto,
-    ): Promise<ReturnDto> {
+    async createCourse(@Body() dto: CreateCourseDto): Promise<ReturnDto> {
         return {
             statusCode: 200,
-            data: await this.courseService.createCourse(
-                dto,
-            ),
+            data: await this.courseService.createCourse(dto),
         }
     }
 
     @ApiBearerAuth()
     @UseGuards(JwtGuard)
     @Post('stage')
-    async createStage(
-        @Body() dto: CreateStageDto,
-    ): Promise<ReturnDto> {
+    async createStage(@Body() dto: CreateStageDto): Promise<ReturnDto> {
         return {
             statusCode: 201,
-            data: await this.courseService.createStage(
-                dto,
-            ),
+            data: await this.courseService.createStage(dto),
         }
     }
 
     @Get('stage')
-    async getStage(
-        @Query() dto: GetStageDto,
-    ): Promise<ReturnDto> {
+    async getStage(@Query() dto: GetStageDto): Promise<ReturnDto> {
         return {
             statusCode: 200,
-            data: await this.courseService.getStage(
-                dto,
-            ),
+            data: await this.courseService.getStage(dto),
         }
     }
 
@@ -105,15 +83,20 @@ export class CourseController {
         @Body() body: UploadFileDto,
     ): Promise<ReturnDto> {
         if (file == null)
-            throw new BadRequestException(
-                "file parameter can't be null",
-            )
+            throw new BadRequestException("file parameter can't be null")
         return {
             statusCode: 201,
-            data: await this.courseService.saveFile(
-                file,
-                body,
-            ),
+            data: await this.courseService.saveFile(file, body),
+        }
+    }
+
+    @Get('coursesBy')
+    async getCoursesByCategory(
+        @Query() dto: GetCoursesByCategoryDto,
+    ): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.courseService.getCourcesByCategory(dto),
         }
     }
 }

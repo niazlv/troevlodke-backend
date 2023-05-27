@@ -97,6 +97,9 @@ model Cource {
   description String?
   title       String?
 
+  categoryid    Int?
+  categorylabel String?
+
   active_icon   String @default("")
   inactive_icon String @default("")
 
