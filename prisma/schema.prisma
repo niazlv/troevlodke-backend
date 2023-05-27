@@ -37,13 +37,23 @@ model Files {
   checksum String @unique
 }
 
+model Lession {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  mimetype String?
+  url      String?
+  text     String?
+}
+
 // модель школ
 model School {
   id     Int    @id @default(autoincrement())
   name   String
   chunks Json
 
-  years String[]
+  years       String[]
+  coordinates String[]
 }
 
 // модель excel parsed from file
@@ -80,9 +90,12 @@ model Stage {
   description String?
   title       String?
 
-  type String
+  mime_type_coverimage String? @default("image/png")
+  coverimage           String?
 
-  fileid Int[] @default([])
+  type      String
+  fileid    Int[]  @default([])
+  lessionid Int[]  @default([])
 
   commentsid Int[] @default([])
   likes      Int   @default(0)
@@ -97,11 +110,19 @@ model Cource {
   description String?
   title       String?
 
+  requirements    String? @default("none")
+  dificulty       Int     @default(0)
+  difficultylabel String? @default("Easy")
+
   categoryid    Int?
   categorylabel String?
 
-  active_icon   String @default("")
-  inactive_icon String @default("")
+  mime_type_icons String @default("image/svg+xml")
+  active_icon     String @default("")
+  inactive_icon   String @default("")
+
+  mime_type_background_img String  @default("image/png")
+  background_img           String? @default("")
 
   stagesid Int[]
 }

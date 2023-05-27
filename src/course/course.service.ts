@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common'
 import {
     CreateCourseDto,
+    CreateLessionDto,
     CreateStageDto,
     GetCourceDto,
     GetCoursesByCategoryDto,
@@ -176,6 +177,16 @@ export class CourseService {
                 })
                 stage['files'].push(file)
             }
+
+            stage['lessions'] = []
+            for (var i = 0; i < stage.lessionid.length; i++) {
+                const lession = await this.prismaService.lession.findFirst({
+                    where: {
+                        id: stage.lessionid[i],
+                    },
+                })
+                stage['lessions'].push(lession)
+            }
             return stage
         } catch (e) {
             if (e.code == 404) {
@@ -228,6 +239,50 @@ export class CourseService {
             })
             return course
         } catch (e) {
+            Logger.error(e)
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async createLession(dto: CreateLessionDto) {
+        const stageid = new Number(dto.stageid)
+        // delete null values
+        Logger.error(dto.stageid, 'before')
+        var data = await this.utilService.cleanData(dto)
+        Logger.error(dto.stageid, 'after')
+        if (data == null) {
+            throw new BadRequestException("body can't be null")
+        }
+        try {
+            // try find stage
+            const stage = await this.prismaService.stage.findFirstOrThrow({
+                where: {
+                    id: dto.stageid,
+                },
+            })
+            Logger.error(dto.stageid, 'before delete')
+            delete data.stageid
+            Logger.error(dto.stageid, 'after delete')
+            const lession = await this.prismaService.lession.create({
+                data: data,
+            })
+
+            // update stage
+            stage.lessionid.push(lession.id)
+
+            const updated_stage = await this.prismaService.stage.update({
+                where: {
+                    id: stageid.valueOf(),
+                },
+                data: {
+                    lessionid: stage.lessionid,
+                },
+            })
+            return lession
+        } catch (e) {
+            if (e.code == 404) {
+                throw new NotFoundException(e)
+            }
             Logger.error(e)
             throw new InternalServerErrorException()
         }

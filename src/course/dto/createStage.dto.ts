@@ -1,13 +1,6 @@
-import {
-    ApiProperty,
-    ApiPropertyOptional,
-} from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import {
-    IsInt,
-    IsOptional,
-    IsString,
-} from 'class-validator'
+import { IsInt, IsOptional, IsString } from 'class-validator'
 
 export class CreateStageDto {
     @ApiProperty()
@@ -29,6 +22,16 @@ export class CreateStageDto {
     @IsString()
     @IsOptional()
     type?: string
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    mime_type_coverimage?: string
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    coverimage?: string
 }
 
 // model Stage {

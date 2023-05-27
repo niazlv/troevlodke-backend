@@ -21,10 +21,7 @@ import {
     ApiOkResponse,
     ApiQuery,
 } from '@nestjs/swagger'
-import {
-    PermissionsGuard,
-    JwtGuard,
-} from 'src/auth/guard'
+import { PermissionsGuard, JwtGuard } from 'src/auth/guard'
 import { Permissions } from 'src/auth/decorator'
 import { ReturnDto } from 'src/dto'
 import { GetSchoolDto } from './dto'
@@ -41,43 +38,37 @@ export class ParseController {
     @ApiBearerAuth()
     @ApiBody({
         description:
-            'requested permits: upload:file',
-        type: 'file',
+            'requested permits: upload:file. Upload file via form-data',
     })
-    @UseGuards(JwtGuard, PermissionsGuard)
-    @Permissions('upload:file')
+    @UseGuards(JwtGuard)
+    // @Permissions('upload:file') // disabled in the hackathon solution for unnecessary
     @Post('excel')
     @UseInterceptors(FileInterceptor('file'))
-    async excel(
-        @UploadedFile() file: Express.Multer.File,
-    ): Promise<ReturnDto> {
+    async excel(@UploadedFile() file: Express.Multer.File): Promise<ReturnDto> {
         return {
             statusCode: 201,
-            data: await this.parseService.excel(
-                file,
-            ),
+            data: await this.parseService.excel(file),
+        }
+    }
+
+    @Get('allexcel')
+    async getAllExcel(): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.parseService.getAllExcel(),
         }
     }
 
     @ApiBearerAuth()
     @UseGuards(JwtGuard)
     @Get('school')
-    async getSchool(
-        @Query() data: GetSchoolDto,
-    ): Promise<ReturnDto> {
-        if (
-            data.id == null &&
-            data.name == null
-        ) {
-            throw new BadRequestException(
-                'minimum 1 parameter',
-            )
+    async getSchool(@Query() data: GetSchoolDto): Promise<ReturnDto> {
+        if (data.id == null && data.name == null) {
+            throw new BadRequestException('minimum 1 parameter')
         }
         return {
             statusCode: 200,
-            data: await this.parseService.getSchool(
-                data,
-            ),
+            data: await this.parseService.getSchool(data),
         }
     }
 
@@ -90,9 +81,7 @@ export class ParseController {
     ): Promise<ReturnDto> {
         return {
             statusCode: 201,
-            data: await this.utilService.saveFile(
-                file,
-            ),
+            data: await this.utilService.saveFile(file),
         }
     }
 }

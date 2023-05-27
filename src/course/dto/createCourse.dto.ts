@@ -13,6 +13,22 @@ export class CreateCourseDto {
     @IsOptional()
     title?: string
 
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    requirements?: string
+
+    @ApiPropertyOptional()
+    @Type(() => Number)
+    @IsInt()
+    @IsOptional()
+    dificulty?: number
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    difficultylabel?: string
+
     @ApiPropertyOptional({
         description:
             'Hardset category setting by id. Specify either categoryid or categorylabel. The other field will be set automatically',
@@ -31,6 +47,14 @@ export class CreateCourseDto {
     @IsString()
     @IsOptional()
     categorylabel?: string
+
+    @ApiPropertyOptional({
+        example: 'image/svg+xml',
+        default: 'image/svg+xml',
+    })
+    @IsString()
+    @IsOptional()
+    mime_type_icons?: string
 
     @ApiPropertyOptional()
     @IsString()

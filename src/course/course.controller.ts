@@ -17,6 +17,7 @@ import { ReturnDto } from 'src/dto'
 import { CourseService } from './course.service'
 import {
     CreateCourseDto,
+    CreateLessionDto,
     CreateStageDto,
     GetCourceDto,
     GetCoursesByCategoryDto,
@@ -87,6 +88,16 @@ export class CourseController {
         return {
             statusCode: 201,
             data: await this.courseService.saveFile(file, body),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Post('lession')
+    async createLession(@Body() dto: CreateLessionDto): Promise<ReturnDto> {
+        return {
+            statusCode: 201,
+            data: await this.courseService.createLession(dto),
         }
     }
 
