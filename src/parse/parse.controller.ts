@@ -24,7 +24,7 @@ import {
 import { PermissionsGuard, JwtGuard } from 'src/auth/guard'
 import { Permissions } from 'src/auth/decorator'
 import { ReturnDto } from 'src/dto'
-import { GetSchoolDto } from './dto'
+import { GetFullExcelDto, GetSchoolDto } from './dto'
 import { UtilService } from 'src/util/util.service'
 
 @ApiTags('parse')
@@ -59,8 +59,6 @@ export class ParseController {
         }
     }
 
-    @ApiBearerAuth()
-    @UseGuards(JwtGuard)
     @Get('school')
     async getSchool(@Query() data: GetSchoolDto): Promise<ReturnDto> {
         if (data.id == null && data.name == null) {
@@ -82,6 +80,14 @@ export class ParseController {
         return {
             statusCode: 201,
             data: await this.utilService.saveFile(file),
+        }
+    }
+
+    @Get('fullexcel')
+    async fullExcel(@Query() dto: GetFullExcelDto): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.parseService.fullExcel(dto),
         }
     }
 }

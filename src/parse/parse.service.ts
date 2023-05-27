@@ -5,7 +5,7 @@ import { createHash } from 'crypto'
 import { Workbook } from 'exceljs'
 import { forkJoin } from 'rxjs'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { GetSchoolDto } from './dto'
+import { GetFullExcelDto, GetSchoolDto } from './dto'
 import { UtilService } from 'src/util/util.service'
 @Injectable()
 export class ParseService {
@@ -298,5 +298,31 @@ export class ParseService {
     async getAllExcel() {
         const excels = await this.prisma.excelFieldsOfStudy.findMany({})
         return excels
+    }
+
+    async fullExcel(dto: GetFullExcelDto) {
+        try {
+            const excel = await this.prisma.excelFieldsOfStudy.findFirstOrThrow(
+                {
+                    where: {
+                        id: dto.excelid,
+                    },
+                },
+            )
+            excel['schools'] = []
+            for (var i = 0; i < excel.schoolid.length; i++) {
+                const school = await this.prisma.school.findFirst({
+                    where: {
+                        id: excel.schoolid[i],
+                    },
+                })
+                excel['schools'].push(school)
+            }
+
+            return excel
+        } catch (e) {
+            throw new NotFoundException('Excel table not found by this id')
+        }
+        return ''
     }
 }
