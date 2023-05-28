@@ -283,22 +283,53 @@ export class UtilService {
             },
         })
 
-        user.firstname = this.decryptByKey(
-            user.firstname,
-            key,
-            iv_storage.iv,
-        ).decrypted
-        user.lastname = this.decryptByKey(
-            user.lastname,
-            key,
-            iv_storage.iv,
-        ).decrypted
-        user.middlename = this.decryptByKey(
-            user.middlename,
-            key,
-            iv_storage.iv,
-        ).decrypted
+        if (user.firstname != null)
+            user.firstname = this.decryptByKey(
+                user.firstname,
+                key,
+                iv_storage.iv,
+            ).decrypted
+        if (user.lastname != null)
+            user.lastname = this.decryptByKey(
+                user.lastname,
+                key,
+                iv_storage.iv,
+            ).decrypted
+        if (user.middlename != null)
+            user.middlename = this.decryptByKey(
+                user.middlename,
+                key,
+                iv_storage.iv,
+            ).decrypted
 
+        return user
+    }
+
+    async cryptUser(user, key: string) {
+        const iv_storage = await this.prisma.iv_storage.findFirst({
+            where: {
+                userid: user.id,
+            },
+        })
+        // personal data encryption
+        if (user.firstname != null)
+            user.firstname = this.encryptByKey(
+                user.firstname,
+                key,
+                iv_storage.iv,
+            ).encrypted
+        if (user.lastname != null)
+            user.lastname = this.encryptByKey(
+                user.lastname,
+                key,
+                iv_storage.iv,
+            ).encrypted
+        if (user.middlename != null)
+            user.middlename = this.encryptByKey(
+                user.middlename,
+                key,
+                iv_storage.iv,
+            ).encrypted
         return user
     }
 }

@@ -12,11 +12,14 @@ import {
     GetCourceDto,
     GetCoursesByCategoryDto,
     GetStageDto,
+    SaveProgressDto,
     UploadFileDto,
 } from './dto'
 import { UtilService } from 'src/util/util.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { ParseService } from 'src/parse/parse.service'
+import { Prisma, User } from '@prisma/client'
+import { isJSON } from 'class-validator'
 
 @Injectable()
 export class CourseService {
@@ -279,6 +282,32 @@ export class CourseService {
             if (e.code == 404) {
                 throw new NotFoundException(e)
             }
+            Logger.error(e)
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async saveProgress(dto: SaveProgressDto, user: { user: User }) {
+        if (dto['progress'] != null) {
+            if (!isJSON(JSON.stringify(dto.progress)))
+                throw new BadRequestException('progress must be a json string')
+        }
+        try {
+            var new_user = await this.prismaService.user.update({
+                where: {
+                    id: user.user.id,
+                },
+                data: {
+                    progress: JSON.stringify(dto.progress),
+                },
+            })
+            new_user = await this.utilService.decryptUser(
+                new_user,
+                user.user['ActiveToken']['key'],
+            )
+            new_user.progress = JSON.parse(new_user.progress as string)
+            return new_user
+        } catch (e) {
             Logger.error(e)
             throw new InternalServerErrorException()
         }

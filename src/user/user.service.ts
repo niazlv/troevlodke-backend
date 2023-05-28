@@ -71,12 +71,24 @@ export class UserService {
             throw new BadRequestException("body can't be null")
         }
 
-        const new_user = await this.prisma.user.update({
+        data.id = user.user.id
+
+        data = await this.utilService.cryptUser(
+            data,
+            user.user['ActiveToken']['key'],
+        )
+
+        var new_user = await this.prisma.user.update({
             where: {
                 id: user.user.id,
             },
             data: data,
         })
+
+        new_user = await this.utilService.decryptUser(
+            new_user,
+            user.user['ActiveToken']['key'],
+        )
         return new_user
     }
 

@@ -26,6 +26,7 @@ export class EditMeDto {
     @ApiPropertyOptional()
     @Type(() => Number)
     @IsInt()
+    @IsOptional()
     age?: number
 
     @ApiPropertyOptional()
@@ -47,6 +48,11 @@ export class EditMeDto {
     @IsString()
     @IsOptional()
     photo?: string
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    score?: string
 }
 
 // model User {

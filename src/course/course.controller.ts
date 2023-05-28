@@ -6,7 +6,9 @@ import {
     Logger,
     NotFoundException,
     Post,
+    Put,
     Query,
+    Req,
     UploadedFile,
     UseGuards,
     UseInterceptors,
@@ -22,11 +24,13 @@ import {
     GetCourceDto,
     GetCoursesByCategoryDto,
     GetStageDto,
+    SaveProgressDto,
     UploadFileDto,
 } from './dto'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ParseService } from 'src/parse/parse.service'
 import { NotFoundError } from 'rxjs'
+import { User } from '@prisma/client'
 
 @ApiTags('The Courses')
 @Controller('course')
@@ -108,6 +112,19 @@ export class CourseController {
         return {
             statusCode: 200,
             data: await this.courseService.getCourcesByCategory(dto),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Put('saveprogress')
+    async saveProgress(
+        @Body() dto: SaveProgressDto,
+        @Req() user: { user: User },
+    ): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.courseService.saveProgress(dto, user),
         }
     }
 }

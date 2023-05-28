@@ -189,6 +189,16 @@ model UserFeed {
   posts    Int[] @default([])
 }
 
+// model progress {
+//   id          Int      @id @default(autoincrement())
+//   createdAt   DateTime @default(now())
+//   courseid Int?
+//   userid Int?
+
+//   courceprogress Int? @default(0)
+//   testprogress Int? @default(0)
+// }
+
 model User {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())

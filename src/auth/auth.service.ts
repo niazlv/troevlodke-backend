@@ -132,23 +132,8 @@ export class AuthService {
                     ).encrypted,
                 )
             }
-
             // personal data encryption
-            user.firstname = this.utilService.encryptByKey(
-                user.firstname,
-                enc_data.key,
-                iv,
-            ).encrypted
-            user.lastname = this.utilService.encryptByKey(
-                user.lastname,
-                enc_data.key,
-                iv,
-            ).encrypted
-            user.middlename = this.utilService.encryptByKey(
-                user.middlename,
-                enc_data.key,
-                iv,
-            ).encrypted
+            user = await this.utilService.cryptUser(user, enc_data.key)
 
             user = await this.prisma.user.update({
                 where: {
@@ -173,6 +158,8 @@ export class AuthService {
             delete user.hash
             delete user.paircatchphrases
             delete user.catchphrases
+
+            user = await this.utilService.decryptUser(user, enc_data.key)
 
             user['access_token'] = await this.signToken(
                 user.id,
