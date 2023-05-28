@@ -1,4 +1,13 @@
-import { Controller, Get, UseGuards, Req } from '@nestjs/common'
+import {
+    Controller,
+    Get,
+    UseGuards,
+    Req,
+    Put,
+    Body,
+    Delete,
+    Query,
+} from '@nestjs/common'
 import {
     ApiBearerAuth,
     ApiBody,
@@ -13,6 +22,7 @@ import { Permissions } from 'src/auth/decorator'
 import { PermissionsGuard, JwtGuard } from 'src/auth/guard'
 import { ReturnDto } from 'src/dto'
 import { UserService } from './user.service'
+import { EditMeDto, HiddenModeDto } from './dto'
 
 @ApiTags('user')
 @Controller('users')
@@ -78,6 +88,32 @@ export class UserController {
     }
 
     @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Put('me')
+    async editMe(
+        @Body() dto: EditMeDto,
+        @Req() user: { user: User },
+    ): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.userService.editMe(dto, user),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Delete('deleteProfile')
+    async deleteMe(@Req() user: { user: User }): Promise<ReturnDto> {
+        const d = await this.userService.deleteMe(user)
+        return {
+            statusCode: 200,
+            data: {
+                deleted_user: d,
+            },
+        }
+    }
+
+    @ApiBearerAuth()
     @ApiOkResponse({
         description:
             'requested permits: read:yourself. return your permissions',
@@ -112,6 +148,27 @@ export class UserController {
         return {
             statusCode: 200,
             data: await this.userService.getYourselfPermissions(user),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Get('hiddenmode')
+    async hiddenMode(
+        @Query() dto: HiddenModeDto,
+        @Req() user: { user: User },
+    ): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.userService.hiddenMode(dto, user),
+        }
+    }
+
+    @Get('allusers')
+    async allGetUsers(): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.userService.allGetUsers(),
         }
     }
 }

@@ -26,6 +26,7 @@ export class FeedService {
             throw new BadRequestException("body can't be null")
         }
         data['authorid'] = user.user.id
+        data['authorname'] = user.user.firstname + ' ' + user.user.lastname
         try {
             const post = await this.prismaService.post.create({
                 data: data,
@@ -59,12 +60,12 @@ export class FeedService {
                     id: dto.postid,
                 },
             })
-            const user = await this.prismaService.user.findFirst({
-                where: {
-                    id: post.authorid,
-                },
-            })
-            post['authorname'] = user.firstname + ' ' + user.lastname
+            // const user = await this.prismaService.user.findFirst({
+            //     where: {
+            //         id: post.authorid,
+            //     },
+            // })
+            // post['authorname'] = user.firstname + ' ' + user.lastname
 
             return post
         } catch (e) {

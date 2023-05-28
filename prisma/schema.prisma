@@ -117,6 +117,8 @@ model Cource {
   categoryid    Int?
   categorylabel String?
 
+  quizzesid Int[] @default([])
+
   mime_type_icons String @default("image/svg+xml")
   active_icon     String @default("")
   inactive_icon   String @default("")
@@ -147,7 +149,21 @@ model Post {
   text  String  @default("")
   image String?
 
-  authorid Int
+  authorid   Int
+  authorname String? @default("")
+}
+
+model Iv_storage {
+  userid Int @id @default(autoincrement())
+
+  iv String @default("")
+}
+
+model Keys {
+  userid Int @id
+
+  key      String
+  isHidden Boolean @default(true)
 }
 
 // модель токенов
@@ -155,10 +171,11 @@ model ActiveToken {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  userid      Int
-  token       String @unique //токен
-  description String @default("CbAS") //описание для кого выдан токен или кем CbAS(Created by AutoSystem)
-  permissions BigInt @default(1) //Какие права у токена. Права выше чем у пользователя не работают(если у толькователя права только 3, а тут выставлено 7, то права будут на уровне 3, НО если вдруг у пользователя права повысились до 15, то права его по этому токену будут 7)
+  userid                    Int
+  token                     String @unique //токен(внутренний)
+  secure_token_part_private String @default("")
+  description               String @default("CbAS") //описание для кого выдан токен или кем CbAS(Created by AutoSystem)
+  permissions               BigInt @default(1) //Какие права у токена. Права выше чем у пользователя не работают(если у толькователя права только 3, а тут выставлено 7, то права будут на уровне 3, НО если вдруг у пользователя права повысились до 15, то права его по этому токену будут 7)
 
   usedAt      DateTime @default(now()) @updatedAt
   countOfUses Int      @default(0)
@@ -181,11 +198,15 @@ model User {
   other       Json     @default("{}")
   isActive    Boolean  @default(true)
 
+  //crypted!!!
   firstname  String? //name
   lastname   String? //lastname
   middlename String? //middle name
   birthday   DateTime? //birthday
   age        Int?
+
+  paircatchphrases String[] @default([])
+  catchphrases     String[] @default(["key1", "key2", "key3"])
 
   city    String @default("Moscow")
   country String @default("Russia")

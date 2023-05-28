@@ -65,6 +65,16 @@ export class CreateCourseDto {
     @IsString()
     @IsOptional()
     inactive_icon?: string
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    mime_type_background_img?: string
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    background_img?: string
 }
 
 // model Cource {
