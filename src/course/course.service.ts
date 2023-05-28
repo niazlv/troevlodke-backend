@@ -247,9 +247,7 @@ export class CourseService {
     async createLession(dto: CreateLessionDto) {
         const stageid = new Number(dto.stageid)
         // delete null values
-        Logger.error(dto.stageid, 'before')
         var data = await this.utilService.cleanData(dto)
-        Logger.error(dto.stageid, 'after')
         if (data == null) {
             throw new BadRequestException("body can't be null")
         }
@@ -260,9 +258,7 @@ export class CourseService {
                     id: dto.stageid,
                 },
             })
-            Logger.error(dto.stageid, 'before delete')
             delete data.stageid
-            Logger.error(dto.stageid, 'after delete')
             const lession = await this.prismaService.lession.create({
                 data: data,
             })

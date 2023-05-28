@@ -139,6 +139,17 @@ model Quizzes {
   title       String?
 }
 
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  title String  @default("")
+  text  String  @default("")
+  image String?
+
+  authorid Int
+}
+
 // модель токенов
 model ActiveToken {
   id        Int      @id @default(autoincrement())

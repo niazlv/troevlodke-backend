@@ -7,6 +7,7 @@ import { UtilModule } from './util/util.module';
 import { ParseModule } from './parse/parse.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
 import { CourseModule } from './course/course.module';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CourseModule } from './course/course.module';
     ParseModule,
     QuizzesModule,
     CourseModule,
+    FeedModule,
   ],
 })
 export class AppModule {}
