@@ -85,22 +85,25 @@ export class FeedService {
         for (var i = 0; i < posts.length; i++) {
             ids[i] = posts[i].authorid
         }
-        const users = await this.prismaService.user.findMany({
-            where: {
-                id: {
-                    in: ids,
-                },
-            },
-        })
-        Logger.error(users)
-        for (var i = 0; i < posts.length; i++) {
-            var authorname = ''
-            for (var j = 0; j < users.length; j++) {
-                if (users[j].id == posts[i].authorid)
-                    authorname = users[j].firstname + ' ' + users[j].lastname
-            }
-            posts[i]['authorname'] = authorname
-        }
+        // const users = await this.prismaService.user.findMany({
+        //     where: {
+        //         id: {
+        //             in: ids,
+        //         },
+        //     },
+        // })
+        // Logger.error(users)
+        // for (var i = 0; i < posts.length; i++) {
+        //     var authorname = ''
+        //     for (var j = 0; j < users.length; j++) {
+        //         if (users[j].id == posts[i].authorid) {
+
+        //             users[j] = await this.utilService.decryptUser(users[j],)
+        //             authorname = users[j].firstname + ' ' + users[j].lastname
+        //         }
+        //     }
+        //     posts[i]['authorname'] = authorname
+        // }
 
         return posts
     }

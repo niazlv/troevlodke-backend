@@ -49,15 +49,21 @@ export class AuthService {
             age: dto.age,
         }
 
-        var catchphrases = [
-            dto.catchphrase1,
-            dto.catchphrase2,
-            dto.catchphrase3,
-        ]
+        var catchphrases
 
+        try {
+            catchphrases = [
+                dto.catchphrase1,
+                dto.catchphrase2,
+                dto.catchphrase3,
+            ]
+        } catch (e) {
+            catchphrases = ['default1', 'default2', 'default3']
+        }
+        console.log(dto)
         const data = await this.utilService.cleanData(dto_data)
-        catchphrases = await this.utilService.cleanData(catchphrases)
-
+        // catchphrases = await this.utilService.cleanData(catchphrases)
+        catchphrases = ['default1', 'default2', 'default3']
         if (data['categories'] != null) {
             if (!isJSON(JSON.stringify(data.categories)))
                 throw new BadRequestException(
@@ -101,12 +107,17 @@ export class AuthService {
                 throw new InternalServerErrorException()
             }
             // data encryption
+            dto.password = String(dto.password)
+            console.log('Dto pass: ' + dto.password)
             const enc_data = this.utilService.encrypt(
                 'init',
                 dto.password,
                 'salt',
                 iv,
             )
+
+            Logger.error(enc_data)
+            Logger.error(catchphrases)
             // crypt password by catchphrases
             const paircatchphrases = []
             for (var i = 0; i < catchphrases.length; i++) {
@@ -119,8 +130,10 @@ export class AuthService {
                     ).encrypted,
                 )
             }
-
+            Logger.error(paircatchphrases)
             // crypt catchphrases by password
+            Logger.error(catchphrases)
+            Logger.error(dto.password)
             const newcatchphrases = []
             for (var i = 0; i < catchphrases.length; i++) {
                 newcatchphrases.push(
@@ -132,6 +145,7 @@ export class AuthService {
                     ).encrypted,
                 )
             }
+            Logger.error(newcatchphrases)
             // personal data encryption
             user = await this.utilService.cryptUser(user, enc_data.key)
 
