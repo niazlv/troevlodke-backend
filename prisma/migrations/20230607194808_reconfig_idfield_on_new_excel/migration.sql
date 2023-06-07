@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "SchoolNew" ALTER COLUMN "idInFile" SET DEFAULT '',
+ALTER COLUMN "idInFile" SET DATA TYPE TEXT;

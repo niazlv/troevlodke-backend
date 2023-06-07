@@ -14,6 +14,7 @@ export class ParseService {
         private utilService: UtilService,
     ) {}
 
+    // парсинг был полностью переписан, старая версия до git commit "45ca755"
     async parse_excel_file(file_url: Files /** prisma */) {
         const file = await this.prisma.files.findFirstOrThrow({
             where: {
@@ -29,25 +30,9 @@ export class ParseService {
         const countRow = worksheet.rowCount
         const countCol = worksheet.getRow(1).cellCount
         Logger.error('row ' + countRow + ' col ' + countCol)
-
-        // Мега костыль. Пожалуйста, пропустите мимо глаз >_<
-        // Пожалейте себя и свои нервы
-        var data = {
-            header: [],
-            body: [],
-        }
         var x = 0
-        var headery = 0
-        var bodyy = 0
-        var isHeader = true
-        var isNumSymbolFinded = false
-        var numSymbolPos = 1
+        const data = []
         worksheet.eachRow(function (row, rownum) {
-            if (isHeader) {
-                data.header[headery] = []
-            } else {
-                data.body[bodyy] = []
-            }
             var temp = []
             for (var i = 1; i <= countCol; i++) {
                 const cell = row.getCell(i)
@@ -55,24 +40,6 @@ export class ParseService {
 
                 if (cell.value != null) {
                     temp[x] = cell.value
-
-                    // check header ends
-                    if (isHeader) {
-                        if (!isNumSymbolFinded) {
-                            if (typeof temp[x] === 'string') {
-                                if (temp[x].at(0) == '№') {
-                                    isNumSymbolFinded = true
-                                    numSymbolPos = x
-                                }
-                            }
-                        } else {
-                            if (typeof temp[x] === 'number') {
-                                if (temp[numSymbolPos] >= 0) {
-                                    isHeader = false
-                                }
-                            }
-                        }
-                    }
 
                     // if cell is formula
                     if (temp[x]['result'] != null) {
@@ -93,109 +60,33 @@ export class ParseService {
                     temp[x] = null
                 }
             }
-            //write on header or on data
-            if (isHeader) {
-                data.header[headery] = temp
-                headery += 1
-            } else {
-                data.body[bodyy] = temp
-                bodyy += 1
-            }
+            data.push(temp)
         })
-
-        var dict = [
-            {
-                name: data.body[0][2],
-                chunks: [[]],
-                years: [],
-                coordinates: [],
-            },
-        ]
-        var j = 0
-        for (var i = 0; i < data.body.length; i++) {
-            //remove nulls from start
-            data.body[i].shift()
-
-            if (dict[dict.length - 1]['name'] != data.body[i][1]) {
-                dict.push({
-                    name: data.body[i][1],
-                    chunks: [],
-                    years: [],
-                    coordinates: [],
-                })
-                j = 0
-            }
-            dict[dict.length - 1]['chunks'][j] = []
-            for (var k = 2; k < data.body[i].length - 3; k += 2) {
-                dict[dict.length - 1]['chunks'][j][k / 2 - 1] = [
-                    data.body[i][k],
-                    data.body[i][k + 1],
-                ]
-            }
-            dict[dict.length - 1]['years'].push(
-                data.body[i][data.body[i].length - 2] != null
-                    ? data.body[i][data.body[i].length - 2]
-                    : '',
-            )
-            dict[dict.length - 1]['coordinates'].push(
-                data.body[i][data.body[i].length - 1] != null
-                    ? data.body[i][data.body[i].length - 1]
-                    : '',
-            )
-
-            j += 1
-        }
-        data.body = dict
-
-        for (var i = 0; i < data.header.length; i++) {
-            //remove nulls from start
-            data.header[i].shift()
-        }
 
         return data
     }
 
-    async parsed_to_db(
-        data: {
-            header: any[]
-            body: any[]
-        },
-        file: Files,
-    ) {
+    async parsed_to_db(data, file: Files) {
         var schoolid = []
-
         // create schools on db
-        for (var i = 0; i < data.body.length; i++) {
+        for (var i = 1; i < data.length; i++) {
             try {
-                const schoolDB = await this.prisma.school.create({
+                const schoolDB = await this.prisma.schoolNew.create({
                     data: {
-                        name: data.body[i].name,
-                        chunks: {
-                            data: data.body[i].chunks,
-                        },
-                        years: data.body[i].years,
-                        coordinates: data.body[i].coordinates,
+                        idInFile: String(data[i][0]),
+                        name: data[i][1],
+                        address: data[i][2],
+                        phone: data[i][3],
+                        email: data[i][4],
+                        coordinates: data[i][6] + ', ' + data[i][5],
+                        district: data[i][7],
                     },
                 })
                 schoolid.push(schoolDB.id)
             } catch (e) {
-                Logger.error('error on create schools', e)
+                Logger.error(e, 'error on create schools')
                 throw e
             }
-        }
-        var nameYear = ''
-        var nameChunks = []
-        try {
-            nameYear =
-                data.header[data.header.length - 2][
-                    data.header[data.header.length - 2].length - 1
-                ]
-            nameChunks = data.header[data.header.length - 2]
-            delete nameChunks[nameChunks.length - 1]
-            delete nameChunks[nameChunks.length - 1]
-        } catch (e) {
-            Logger.error('error on create nameYear and nameChanks', e)
-            throw e
         }
 
         try {
@@ -215,12 +106,11 @@ export class ParseService {
             //     }
             // });
             const excelFieldsOfStudy =
-                await this.prisma.excelFieldsOfStudy.create({
+                await this.prisma.excelFieldsOfStudyNew.create({
                     data: {
                         originalFileChecksum: file.checksum,
                         fileid: file.id,
                         schoolid: schoolid,
-                        nameChunks: nameChunks,
                         ticketStatus: true,
                     },
                 })
@@ -229,8 +119,7 @@ export class ParseService {
             Logger.error('error on create excel fieldsofstudy', e)
             throw e
         }
-
-        return
+        return ''
     }
 
     async excel(file: Express.Multer.File) {
@@ -238,7 +127,7 @@ export class ParseService {
         var uploadedFile = await this.utilService.saveFile(file)
 
         // check, maybe we parsed?
-        const check = await this.prisma.excelFieldsOfStudy.findFirst({
+        const check = await this.prisma.excelFieldsOfStudyNew.findFirst({
             where: {
                 originalFileChecksum: uploadedFile.checksum,
             },
@@ -286,7 +175,7 @@ export class ParseService {
         if (dd.id == null) delete dd.id
         if (dd.name == null) delete dd.name
         try {
-            const School = await this.prisma.school.findFirstOrThrow({
+            const School = await this.prisma.schoolNew.findFirstOrThrow({
                 where: data,
             })
             return School
@@ -296,22 +185,21 @@ export class ParseService {
     }
 
     async getAllExcel() {
-        const excels = await this.prisma.excelFieldsOfStudy.findMany({})
+        const excels = await this.prisma.excelFieldsOfStudyNew.findMany({})
         return excels
     }
 
     async fullExcel(dto: GetFullExcelDto) {
         try {
-            const excel = await this.prisma.excelFieldsOfStudy.findFirstOrThrow(
-                {
+            const excel =
+                await this.prisma.excelFieldsOfStudyNew.findFirstOrThrow({
                     where: {
                         id: dto.excelid,
                     },
-                },
-            )
+                })
             excel['schools'] = []
             for (var i = 0; i < excel.schoolid.length; i++) {
-                const school = await this.prisma.school.findFirst({
+                const school = await this.prisma.schoolNew.findFirst({
                     where: {
                         id: excel.schoolid[i],
                     },

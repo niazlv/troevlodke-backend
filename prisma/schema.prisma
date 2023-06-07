@@ -70,6 +70,29 @@ model excelFieldsOfStudy {
   originalFileChecksum String @unique
 }
 
+model excelFieldsOfStudyNew {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  fileid    Int
+
+  ticketStatus Boolean @default(false)
+
+  schoolid             Int[]  @default([])
+  originalFileChecksum String @unique
+}
+
+model SchoolNew {
+  id Int @id @default(autoincrement())
+
+  idInFile    String? @default("")
+  name        String? @default("")
+  address     String? @default("")
+  phone       String? @default("")
+  email       String? @default("")
+  coordinates String? @default("")
+  district    String? @default("")
+}
+
 // модель комментариев
 model Comments {
   id        Int      @id @default(autoincrement())
