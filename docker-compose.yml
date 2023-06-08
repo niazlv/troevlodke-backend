@@ -75,6 +75,7 @@ services:
     image: niazlv/troevlodke-backend:latest
     depends_on:
       - postgres-stage
+      - nginx
     restart: always
     env_file:
       - ./env/stage.env
@@ -86,6 +87,20 @@ services:
 
     volumes:
       - ~/api-stage/uploads:/app/uploads
+      - nginx-files:/app/nginx
+  
+  nginx:
+    build: 
+      context: nginx
+      dockerfile: ../docker/nginx.Dockerfile
+    ports:
+      - 4088:4088
+    restart: always
+    networks:
+      - stage
+    volumes:
+      - nginx-files:/var/media
+    
 
 networks:
   test:
@@ -94,3 +109,4 @@ networks:
 
 volumes:
   docker-stage-troevlodke-postgres:
+  nginx-files:

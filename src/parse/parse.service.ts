@@ -213,4 +213,35 @@ export class ParseService {
         }
         return ''
     }
+
+    async lastExcel() {
+        try {
+            const excel = await this.prisma.excelFieldsOfStudyNew.findMany({
+                orderBy: {
+                    id: 'desc',
+                },
+                take: 1,
+            })
+            console.log(excel)
+            excel['schools'] = []
+            for (var i = 0; i < excel[0].schoolid.length; i++) {
+                const school = await this.prisma.schoolNew.findFirst({
+                    where: {
+                        id: excel[0].schoolid[i],
+                    },
+                })
+                excel['schools'].push(school)
+            }
+
+            return excel
+        } catch (e) {
+            throw new NotFoundException('Excel table not found by this id')
+        }
+        return ''
+    }
+
+    async saveToNginx(file: Express.Multer.File) {
+        console.log(file)
+        return 'http://campfire.ext-it.ru:4088/' + file.filename
+    }
 }

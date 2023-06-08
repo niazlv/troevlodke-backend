@@ -21,11 +21,13 @@ import {
     ApiOkResponse,
     ApiQuery,
 } from '@nestjs/swagger'
+import { diskStorage } from 'multer'
 import { PermissionsGuard, JwtGuard } from 'src/auth/guard'
 import { Permissions } from 'src/auth/decorator'
 import { ReturnDto } from 'src/dto'
 import { GetFullExcelDto, GetSchoolDto } from './dto'
 import { UtilService } from 'src/util/util.service'
+import { extname } from 'path'
 
 @ApiTags('parse')
 @Controller('parse')
@@ -73,13 +75,28 @@ export class ParseController {
     @ApiBearerAuth()
     @UseGuards(JwtGuard)
     @Post('upload')
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(
+        FileInterceptor('file', {
+            storage: diskStorage({
+                destination: '/app/nginx',
+                filename: (req, file, cb) => {
+                    // Generating a 32 random chars long string
+                    const randomName = Array(16)
+                        .fill(null)
+                        .map(() => Math.round(Math.random() * 8).toString(16))
+                        .join('')
+                    //Calling the callback passing the random name generated with the original extension name
+                    cb(null, `${randomName}-${file.originalname}`)
+                },
+            }),
+        }),
+    )
     async uploadFile(
         @UploadedFile() file: Express.Multer.File,
     ): Promise<ReturnDto> {
         return {
             statusCode: 201,
-            data: await this.utilService.saveFile(file),
+            data: await this.parseService.saveToNginx(file),
         }
     }
 
@@ -88,6 +105,14 @@ export class ParseController {
         return {
             statusCode: 200,
             data: await this.parseService.fullExcel(dto),
+        }
+    }
+
+    @Get('lastexcel')
+    async lastExcel(): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.parseService.lastExcel(),
         }
     }
 }
