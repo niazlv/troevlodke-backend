@@ -91,6 +91,7 @@ def make_json(title, description, icon, background_img, requirements,difficulty,
 
 if(__name__ == "__main__"):
 
+    # ----- обязательные поля -------
     title = "Ноты. Основы"
     description = "Курс  Ноты. Основы предназначен для начинающих музыкантов, которые хотят изучить основы игры на скрипке и научиться читать ноты. В рамках курса вы познакомитесь с основами музыкальной теории и техникой игры на скрипке, научитесь читать ноты и играть простые мелодии. Курс состоит из нескольких модулей, каждый из которых посвящен определенной теме. В первых модулях вы изучите основные элементы музыкальной теории, такие как ноты, знаки, длительности и т.д. Вы также познакомитесь с основами игры на скрипке, включая приемы держания инструмента, поз"
     icon = "http://campfire.ext-it.ru:4088/4786674861785123-emojione-v1_musical-notes.png"
@@ -105,7 +106,7 @@ if(__name__ == "__main__"):
     lessonImages = ["https://images.unsplash.com/photo-1585263547501-7e5a0c222010?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80", "https://images.unsplash.com/photo-1612225330812-01a9c6b355ec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80", "https://images.unsplash.com/photo-1601375863404-5b912f4536df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80", "https://images.unsplash.com/photo-1492563817904-5f1dc687974f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80", "https://images.unsplash.com/photo-1465821185615-20b3c2fbf41b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1298&q=80"]
 
     video = "http://campfire.ext-it.ru:4088/5721713452426673-Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20%28Official%20Music%20Video%29.mp4"
-
+    # -------------------------------
 
     # создаем нужный формат из данных
     data = make_json(title,description,icon,background_img,requirements,difficulty,categoryid,categorylabel,lessonsAmount,lessonTitles,lessonDescriptions,lessonImages,video)
