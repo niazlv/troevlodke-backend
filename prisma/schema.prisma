@@ -10,6 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum enumFriendRequest {
+  REQUEST
+  ACCEPT
+  DENY
+}
+
 //побитовая модель доступа
 model permissions {
   bit  Int    @id
@@ -221,6 +227,15 @@ model UserFeed {
 //   courceprogress Int? @default(0)
 //   testprogress Int? @default(0)
 // }
+
+model FriendList {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  user1  Int
+  user2  Int
+  status enumFriendRequest @default(REQUEST)
+}
 
 model User {
   id          Int      @id @default(autoincrement())

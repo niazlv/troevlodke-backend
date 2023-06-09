@@ -7,6 +7,7 @@ import {
     Body,
     Delete,
     Query,
+    Post,
 } from '@nestjs/common'
 import {
     ApiBearerAuth,
@@ -22,7 +23,12 @@ import { Permissions } from 'src/auth/decorator'
 import { PermissionsGuard, JwtGuard } from 'src/auth/guard'
 import { ReturnDto } from 'src/dto'
 import { UserService } from './user.service'
-import { EditMeDto, HiddenModeDto } from './dto'
+import {
+    EditMeDto,
+    FriendRequestDto,
+    HiddenModeDto,
+    ReplyFriendRequestDto,
+} from './dto'
 
 @ApiTags('user')
 @Controller('users')
@@ -169,6 +175,52 @@ export class UserController {
         return {
             statusCode: 200,
             data: await this.userService.allGetUsers(),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Post('friendrequest')
+    async addRequest(
+        @Body() dto: FriendRequestDto,
+        @Req() user: { user: User },
+    ): Promise<ReturnDto> {
+        return {
+            statusCode: 201,
+            data: await this.userService.addFriendRequest(dto, user),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Post('replyfriend')
+    async replyFriendRequest(
+        @Body() dto: ReplyFriendRequestDto,
+        @Req() user: { user: User },
+    ): Promise<ReturnDto> {
+        return {
+            statusCode: 201,
+            data: await this.userService.replyFriendRequest(dto, user),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Get('friends')
+    async getFriends(@Req() user: { user: User }): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.userService.getFriends(user),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Get('friendrequest')
+    async getFriendRequest(@Req() user: { user: User }): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.userService.getFriendRequest(user),
         }
     }
 }

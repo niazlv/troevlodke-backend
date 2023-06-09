@@ -5,12 +5,17 @@ import {
     Logger,
     NotFoundException,
 } from '@nestjs/common'
-import { Prisma, User } from '@prisma/client'
+import { Keys, Prisma, User } from '@prisma/client'
 import { error } from 'console'
 import { Request } from 'express'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { UtilService } from 'src/util/util.service'
-import { EditMeDto, HiddenModeDto } from './dto'
+import {
+    EditMeDto,
+    FriendRequestDto,
+    HiddenModeDto,
+    ReplyFriendRequestDto,
+} from './dto'
 import { createCipheriv, scrypt } from 'crypto'
 import { use } from 'passport'
 import { IsBooleanString } from 'class-validator'
@@ -186,6 +191,161 @@ export class UserService {
         } catch (e) {
             if (e instanceof NotFoundException) throw new NotFoundException()
             Logger.error("can't get all users", e)
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async addFriendRequest(dto: FriendRequestDto, user: { user: User }) {
+        // disable encryption
+        await this.hiddenMode({ isHidden: false }, user)
+        try {
+            const friendRequest = await this.prisma.friendList.create({
+                data: {
+                    user1: user.user.id,
+                    user2: dto.userid,
+                    status: 'REQUEST',
+                },
+            })
+
+            return 'ok'
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                throw new NotFoundException(e)
+            }
+            Logger.error(e, "on addRequest. Can't add to friend")
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async replyFriendRequest(dto: ReplyFriendRequestDto, user: { user: User }) {
+        try {
+            const FindFriendRequest = await this.prisma.friendList.findFirst({
+                where: {
+                    OR: {
+                        user1: user.user.id,
+                        user2: user.user.id,
+                    },
+                    AND: {
+                        OR: {
+                            user1: dto.userid,
+                            user2: dto.userid,
+                        },
+                    },
+                },
+            })
+
+            if (FindFriendRequest == null) {
+                throw new NotFoundException()
+            }
+
+            const FriendRequest = await this.prisma.friendList.update({
+                where: {
+                    id: FindFriendRequest.id,
+                },
+                data: {
+                    status: dto.isAccept ? 'ACCEPT' : 'DENY',
+                },
+            })
+            if (dto.isAccept) {
+                return 'Accepted'
+            } else {
+                return 'Rejected'
+            }
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                throw new NotFoundException()
+            }
+            Logger.error(e, "on addRequest. Can't add to friend")
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async getFriends(user: { user: User }) {
+        try {
+            const friendList = await this.prisma.friendList.findMany({
+                where: {
+                    OR: {
+                        user1: user.user.id,
+                        user2: user.user.id,
+                    },
+                },
+            })
+            const friend = []
+            for (var i = 0; i < friendList.length; i++) {
+                friend.push(
+                    friendList[i].user1 == user.user.id
+                        ? friendList[i].user2
+                        : friendList[i].user1,
+                )
+            }
+            const keys = await this.prisma.keys.findMany({
+                where: {
+                    userid: {
+                        in: friend,
+                    },
+                },
+            })
+            const usersKey = []
+            for (var i = 0; i < keys.length; i++) {
+                usersKey.push(keys[i].userid)
+            }
+
+            const friendUser = await this.prisma.user.findMany({
+                where: {
+                    id: {
+                        in: usersKey,
+                    },
+                },
+            })
+
+            const friendsprofile = []
+            var di = -1
+            for (var i = 0; i < friend.length; i++) {
+                for (var j = 0; j < friendUser.length; j++) {
+                    delete friendUser[i].hash
+                    delete friendUser[i].catchphrases
+                    if (friend[i] == friendUser[i].id) {
+                        friendsprofile.push(friendUser[i])
+                        di += 1
+                    }
+                }
+                if (di != i) {
+                    di += 1
+                    friendsprofile.push(null)
+                }
+            }
+
+            return {
+                friendsid: friend,
+                friendsprofile: friendsprofile,
+            }
+        } catch (e) {
+            if (e.code == 404) {
+                throw new NotFoundException()
+            }
+            Logger.error(e, "on getFriends. Can't get friend")
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async getFriendRequest(user: { user: User }) {
+        try {
+            const friendList = await this.prisma.friendList.findMany({
+                where: {
+                    OR: {
+                        user1: user.user.id,
+                        user2: user.user.id,
+                    },
+                    status: 'REQUEST',
+                    AND: {
+                        status: 'DENY',
+                    },
+                },
+            })
+
+            return friendList
+        } catch (e) {
+            Logger.error(e, "on getFriendRequest. Can't get friends requests")
             throw new InternalServerErrorException()
         }
     }
