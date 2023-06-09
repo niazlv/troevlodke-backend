@@ -170,6 +170,12 @@ model Quizzes {
   title       String?
 }
 
+enum enumTypePost {
+  POST
+  EVENT
+  ADVERTISEMENT
+}
+
 model Post {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -179,7 +185,19 @@ model Post {
   image String?
 
   authorid   Int
-  authorname String? @default("")
+  authorname String?  @default("")
+  badge      String[] @default([])
+
+  likes    Int @default(0)
+  dislikes Int @default(0)
+
+  type enumTypePost @default(POST)
+
+  date      DateTime? @default(now())
+  datebegin DateTime? @default(now())
+  dateend   DateTime? @default(now())
+  address   String?   @default("")
+  money     String    @default("0.01 rub")
 }
 
 model Iv_storage {

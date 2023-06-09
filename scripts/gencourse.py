@@ -1,5 +1,6 @@
 import json
 import requests
+import random
 
 endpoint_stage = "http://campfire.ext-it.ru:4081/api/v1/"
 endpoint_local = "http://localhost:4081/api/v1/"
@@ -8,6 +9,8 @@ headers_local = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e
 
 endpoint = endpoint_stage
 headers = headers_stage
+
+icons_list = ['http://campfire.ext-it.ru:4088/0076458566151737-twemoji_performing-arts.png', "http://campfire.ext-it.ru:4088/0512667771333144-fxemoji_musicalkeyboard.png", "http://campfire.ext-it.ru:4088/0842672338334387-twemoji_violin.png", "http://campfire.ext-it.ru:4088/1164421201462151-emojione-v1_musical-note.png", "http://campfire.ext-it.ru:4088/1203055750458366-gitar-start.png", "http://campfire.ext-it.ru:4088/1372424581052624-emojione-v1_guitar.png", "http://campfire.ext-it.ru:4088/2088874236741755-emojione_artist-palette.png", "http://campfire.ext-it.ru:4088/3256376323276780-emojione_horse.png", "http://campfire.ext-it.ru:4088/3327453122523787-noto_drum.png", "http://campfire.ext-it.ru:4088/4322118340447121-noto-v1_paintbrush.png", "http://campfire.ext-it.ru:4088/4786674861785123-emojione-v1_musical-notes.png", "http://campfire.ext-it.ru:4088/5420265854131344-noto-v1_paintbrush.png", "http://campfire.ext-it.ru:4088/6565228177531285-twemoji_school-backpack.png", "http://campfire.ext-it.ru:4088/7622121666721611-emojione_musical-score.png", "http://campfire.ext-it.ru:4088/8324413643044275-noto_artist.png", "http://campfire.ext-it.ru:4088/8371641350044185-fxemoji_circustent.png", "http://campfire.ext-it.ru:4088/8583646106332524-noto-v1_musical-notes.png"]
 
 def input_data():
     data = input("Введите название курса или JSON обьект курса: ")
@@ -44,6 +47,8 @@ def make_json(title, description, icon, background_img, requirements,difficulty,
     else:
         difficultylabel = "Непонятный"
     
+    icon = icons_list[random.randint(0,len(icons_list)-1)]
+
     # автозаполнение сатегорий
     if(categoryid == None):
         categoryid = categories.index(categorylabel)
@@ -92,16 +97,18 @@ def make_json(title, description, icon, background_img, requirements,difficulty,
 if(__name__ == "__main__"):
 
     # ----- обязательные поля -------
-    title = "Ноты. Основы"
-    description = "Курс  Ноты. Основы предназначен для начинающих музыкантов, которые хотят изучить основы игры на скрипке и научиться читать ноты. В рамках курса вы познакомитесь с основами музыкальной теории и техникой игры на скрипке, научитесь читать ноты и играть простые мелодии. Курс состоит из нескольких модулей, каждый из которых посвящен определенной теме. В первых модулях вы изучите основные элементы музыкальной теории, такие как ноты, знаки, длительности и т.д. Вы также познакомитесь с основами игры на скрипке, включая приемы держания инструмента, поз"
+    title = "Цифровое искусство для начинающих"
+    description = "Курс для всех, кто хочет научиться создавать красивые и эффективные цифровые произведения искусства. Здесь вы узнаете, как использовать различные программы и техники, чтобы создавать уникальные произведения. Мы также рассмотрим историю цифрового искусства и научимся различать различные стили."
+    requirements = "Для участия в этом курсе необходимо иметь базовое понимание компьютера и желание улучшить свои навыки. Мы приветствуем всех, кто хочет научиться создавать удивительные произведения искусства и развиваться в области цифрового искусства."
+    difficulty = 3
+    categoryid = None
+    categorylabel = "ИЗО" 
+    lessonsAmount = 1
+    lessonTitles = ["Основы цифрового искусства"] 
+    lessonDescriptions = ["На этом уроке вы узнаете основные правила цифрового искусства и узнаете, как правильно использовать различные программы."]
+            
+    background_img = "http://campfire.ext-it.ru:4088/1431375144872172-107687_big.png"
     icon = "http://campfire.ext-it.ru:4088/4786674861785123-emojione-v1_musical-notes.png"
-    background_img = "https://images.unsplash.com/photo-1566913485233-a9b2afe13757?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80"
-    requirements = "Желание изучить основы игры на скрипке и умение читать ноты. Никаких специальных знаний и навыков не требуется, курс подходит для начинающих музыкантов."
-    difficulty = 0
-    categoryid = 8
-    categorylabel = "Скрипка"
-    lessonsAmount = 5
-    lessonTitles = ["Введение в музыку и история скрипки", "Основы музыкальной теории", "Ноты и их значения", "Держание скрипки и игра на открытых струнах", "Игра на первой позиции"]
     lessonDescriptions = [ "В первом уроке вы ознакомитесь с историей скрипки, ее строением и основными элементами музыкальной теории. Вы также узнаете, как правильно держать скрипку и смысл нотации на листе музыки.", "В этом уроке вы изучите основные элементы музыкальной теории, такие как тональность и ритм. Вы также научитесь играть ритмические фигуры на скрипке.", "В этом уроке вы изучите ноты и их значения, а также научитесь читать ноты на листе музыки. Вы также познакомитесь с аккордами и их использованием в музыке.", "В этом уроке вы научитесь держать скрипку и играть на открытых струнах. Вы также изучите приемы левой руки и узнаете, как правильно настраивать скрипку.", "В этом уроке вы научитесь играть на первой позиции на скрипке. Вы изучите различные приемы левой и правой руки, а также научитесь играть простые мелодии." ]
     lessonImages = ["https://images.unsplash.com/photo-1585263547501-7e5a0c222010?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80", "https://images.unsplash.com/photo-1612225330812-01a9c6b355ec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80", "https://images.unsplash.com/photo-1601375863404-5b912f4536df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80", "https://images.unsplash.com/photo-1492563817904-5f1dc687974f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80", "https://images.unsplash.com/photo-1465821185615-20b3c2fbf41b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1298&q=80"]
 

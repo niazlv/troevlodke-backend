@@ -1,0 +1,7 @@
+-- CreateEnum
+CREATE TYPE "enumTypePost" AS ENUM ('POST', 'EVENT', 'ADVERTISEMENT');
+
+-- AlterTable
+ALTER TABLE "Post" ADD COLUMN     "address" TEXT DEFAULT '',
+ADD COLUMN     "data" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "type" "enumTypePost" NOT NULL DEFAULT 'POST';

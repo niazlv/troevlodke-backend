@@ -239,6 +239,9 @@ export class CourseService {
                 where: {
                     categoryid: dto.categoryid,
                 },
+                orderBy: {
+                    createdAt: 'asc',
+                },
             })
             return course
         } catch (e) {

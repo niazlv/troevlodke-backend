@@ -18,7 +18,7 @@ import {
 } from './dto'
 import { createCipheriv, scrypt } from 'crypto'
 import { use } from 'passport'
-import { IsBooleanString } from 'class-validator'
+import { IsBooleanString, isJSON } from 'class-validator'
 
 @Injectable()
 export class UserService {
@@ -74,6 +74,13 @@ export class UserService {
         var data = await this.utilService.cleanData(dto)
         if (data == null) {
             throw new BadRequestException("body can't be null")
+        }
+
+        if (data['categories'] != null) {
+            if (!isJSON(JSON.stringify(data.categories)))
+                throw new BadRequestException(
+                    'categories must be a json string',
+                )
         }
 
         data.id = user.user.id

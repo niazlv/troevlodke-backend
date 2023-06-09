@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsInt, IsOptional, IsString } from 'class-validator'
+import { IsInt, IsObject, IsOptional, IsString } from 'class-validator'
 
 export class EditMeDto {
     @ApiPropertyOptional()
@@ -53,6 +53,22 @@ export class EditMeDto {
     @IsString()
     @IsOptional()
     score?: string
+
+    @ApiPropertyOptional({
+        example: {
+            data: [
+                {
+                    id: 5,
+                    label: 'Живопись',
+                    value: 'Живопись',
+                },
+            ],
+        },
+        description: 'Направления из шага 3(5 скрин в фигме)',
+    })
+    @IsObject()
+    @IsOptional()
+    categories?: JSON
 }
 
 // model User {

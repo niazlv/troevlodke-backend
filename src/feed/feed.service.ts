@@ -7,7 +7,13 @@ import {
 } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { UtilService } from 'src/util/util.service'
-import { CreatePostDto, DeletePostDto, EditPostDto, GetPostDto } from './dto'
+import {
+    CreatePostDto,
+    DeletePostDto,
+    EditPostDto,
+    GetPostDto,
+    UpdateLikeDto,
+} from './dto'
 import { ApiInternalServerErrorResponse } from '@nestjs/swagger'
 import { User } from '@prisma/client'
 import { NotFoundError } from 'rxjs'
@@ -84,6 +90,11 @@ export class FeedService {
         const ids = []
         for (var i = 0; i < posts.length; i++) {
             ids[i] = posts[i].authorid
+            posts[i]['user'] = await this.prismaService.user.findFirst({
+                where: {
+                    id: posts[i].authorid,
+                },
+            })
         }
         // const users = await this.prismaService.user.findMany({
         //     where: {
@@ -148,6 +159,43 @@ export class FeedService {
                 throw new NotFoundException('post not found by this id')
             }
             Logger.error(e, 'delete post failed')
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async updateLike(dto: UpdateLikeDto) {
+        var like = 0
+        var dislike = 0
+        console.log(dto)
+        if (dto.isLike != null) {
+            dto.isLike = (dto.isLike as unknown as string) === 'true'
+            like = dto.isLike ? 1 : -1
+        }
+        if (dto.isLike != null) {
+            dto.isDislike = (dto.isDislike as unknown as string) === 'true'
+            dislike = dto.isDislike ? 1 : -1
+        }
+        try {
+            const post = await this.prismaService.post.update({
+                where: {
+                    id: dto.postid,
+                },
+                data: {
+                    likes: {
+                        increment: like,
+                    },
+                    dislikes: {
+                        increment: dislike,
+                    },
+                },
+            })
+
+            return post
+        } catch (e) {
+            if (e.code == 404) {
+                throw new NotFoundException('post not found by this id')
+            }
+            Logger.error(e, 'update likes failed')
             throw new InternalServerErrorException()
         }
     }

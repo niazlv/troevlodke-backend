@@ -13,7 +13,13 @@ import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger'
 import { ReturnDto } from 'src/dto'
 import { FeedService } from './feed.service'
 import { JwtGuard } from 'src/auth/guard'
-import { CreatePostDto, DeletePostDto, EditPostDto, GetPostDto } from './dto'
+import {
+    CreatePostDto,
+    DeletePostDto,
+    EditPostDto,
+    GetPostDto,
+    UpdateLikeDto,
+} from './dto'
 import { User } from '@prisma/client'
 
 @ApiTags('News feed')
@@ -70,6 +76,16 @@ export class FeedController {
         return {
             statusCode: 200,
             data: await this.feedService.deletePost(dto),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Put('updatelike')
+    async updateLike(@Body() dto: UpdateLikeDto): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.feedService.updateLike(dto),
         }
     }
 }

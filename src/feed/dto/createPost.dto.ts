@@ -1,5 +1,12 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { IsOptional, IsString } from 'class-validator'
+import { ApiPropertyOptional } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
+import {
+    IsArray,
+    IsDateString,
+    IsNumber,
+    IsOptional,
+    IsString,
+} from 'class-validator'
 
 export class CreatePostDto {
     @ApiPropertyOptional()
@@ -16,6 +23,45 @@ export class CreatePostDto {
     @IsString()
     @IsOptional()
     image?: string
+
+    @ApiPropertyOptional({
+        isArray: true,
+        example: [
+            {
+                // id: 0,
+                answer: 'Графика',
+            },
+        ],
+    })
+    // @Type(() => Array<String>)
+    @IsArray()
+    @IsOptional()
+    badge?: Array<String>
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    type?: string
+
+    @ApiPropertyOptional()
+    @IsDateString()
+    @IsOptional()
+    datebegin?: Date
+
+    @ApiPropertyOptional()
+    @IsDateString()
+    @IsOptional()
+    dateend?: Date
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    address?: string
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    money?: string
 }
 
 // model Post {
