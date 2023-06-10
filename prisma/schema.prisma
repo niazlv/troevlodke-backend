@@ -123,6 +123,8 @@ model Stage {
   coverimage           String?
 
   type      String
+  quizzesid Int?
+  points    Int    @default(100)
   fileid    Int[]  @default([])
   lessionid Int[]  @default([])
 
@@ -168,6 +170,8 @@ model Quizzes {
   data        Json
   description String?
   title       String?
+
+  points Int @default(300)
 }
 
 enum enumTypePost {
@@ -198,6 +202,15 @@ model Post {
   dateend   DateTime? @default(now())
   address   String?   @default("")
   money     String    @default("0.01 rub")
+  clubid    Int       @default(0)
+}
+
+model club {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  title            String
+  subscribersCount Int    @default(0)
 }
 
 model Iv_storage {
@@ -288,6 +301,7 @@ model User {
   progress  Json   @default("{}") // ???
   friendsid Int[]  @default([]) // friends
   interests String @default("")
+  clubid    Int[]  @default([0])
 
   tests Int[] @default([])
 

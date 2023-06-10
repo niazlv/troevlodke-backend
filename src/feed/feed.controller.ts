@@ -19,6 +19,8 @@ import {
     EditPostDto,
     GetPostDto,
     UpdateLikeDto,
+    CreateClubDto,
+    GetClubDto,
 } from './dto'
 import { User } from '@prisma/client'
 
@@ -86,6 +88,29 @@ export class FeedController {
         return {
             statusCode: 200,
             data: await this.feedService.updateLike(dto),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Post('club')
+    async createClub(
+        @Req() user: { user: User },
+        @Body() dto: CreateClubDto,
+    ): Promise<ReturnDto> {
+        return {
+            statusCode: 201,
+            data: await this.feedService.createClub(user, dto),
+        }
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtGuard)
+    @Get('club')
+    async getClub(@Query() dto: GetClubDto): Promise<ReturnDto> {
+        return {
+            statusCode: 200,
+            data: await this.feedService.getClub(dto),
         }
     }
 }

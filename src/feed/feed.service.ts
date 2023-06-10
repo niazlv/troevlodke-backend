@@ -13,11 +13,12 @@ import {
     EditPostDto,
     GetPostDto,
     UpdateLikeDto,
+    CreateClubDto,
+    GetClubDto,
 } from './dto'
 import { ApiInternalServerErrorResponse } from '@nestjs/swagger'
 import { User } from '@prisma/client'
 import { NotFoundError } from 'rxjs'
-
 @Injectable()
 export class FeedService {
     constructor(
@@ -199,4 +200,55 @@ export class FeedService {
             throw new InternalServerErrorException()
         }
     }
+
+    async getClub(dto: GetClubDto) {
+        try {
+            const club = await this.prismaService.club.findFirst({
+                where: {
+                    id: dto.id,
+                },
+            })
+
+            const posts = await this.prismaService.post.findMany({
+                where: {
+                    clubid: dto.id,
+                },
+                orderBy: [
+                    {
+                        createdAt: 'desc',
+                    },
+                ],
+            })
+            const ids = []
+            for (var i = 0; i < posts.length; i++) {
+                ids[i] = posts[i].authorid
+                posts[i]['user'] = await this.prismaService.user.findFirst({
+                    where: {
+                        id: posts[i].authorid,
+                    },
+                })
+            }
+            club['posts'] = posts
+
+            return club
+        } catch (e) {
+            Logger.error(e, 'getclub')
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async createClub(user: { user: User }, dto: CreateClubDto) {
+        try {
+            const club = await this.prismaService.club.create({
+                data: {
+                    title: dto.title,
+                },
+            })
+            return club
+        } catch (e) {
+            Logger.error(e, 'getclub')
+            throw new InternalServerErrorException()
+        }
+    }
+    async subscribeClub() {}
 }

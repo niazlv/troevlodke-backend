@@ -190,6 +190,16 @@ export class CourseService {
                 })
                 stage['lessions'].push(lession)
             }
+
+            stage['quizzes'] = {}
+            try {
+                const quizzes = await this.prismaService.quizzes.findFirst({
+                    where: {
+                        id: stage.quizzesid,
+                    },
+                })
+                stage['quizzes'] = quizzes
+            } catch (e) {}
             return stage
         } catch (e) {
             if (e.code == 404) {

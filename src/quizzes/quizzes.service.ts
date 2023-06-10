@@ -112,7 +112,7 @@ export class QuizzesService {
         return null
     }
 
-    async passQuizzes(body: PassDto) {
+    async passQuizzes(body: PassDto, user: { user: User }) {
         try {
             const getQuizzes = await this.prisma.quizzes.findFirst({
                 where: {
@@ -166,10 +166,25 @@ export class QuizzesService {
                     errors.push(i)
                 }
             }
+
+            const nscore = (score / maxScore) * getQuizzes.points
+
+            const updateUser = await this.prisma.user.update({
+                where: {
+                    id: user.user.id,
+                },
+                data: {
+                    score: {
+                        increment: nscore,
+                    },
+                },
+            })
             return {
                 score,
                 maxScore,
                 errors,
+                points: nscore,
+                userScore: updateUser.score,
             }
         } catch (e) {
             if (e.code == 404) {

@@ -3,6 +3,7 @@ import { Type } from 'class-transformer'
 import {
     IsArray,
     IsDateString,
+    IsInt,
     IsNumber,
     IsOptional,
     IsString,
@@ -62,6 +63,13 @@ export class CreatePostDto {
     @IsString()
     @IsOptional()
     money?: string
+
+    @ApiPropertyOptional({
+        default: 0,
+    })
+    @Type(() => Number)
+    @IsInt()
+    clubid?: number
 }
 
 // model Post {
